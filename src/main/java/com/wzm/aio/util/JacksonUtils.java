@@ -13,8 +13,7 @@ public abstract class JacksonUtils {
 
 
     public static Map<String, String> convertToStrMap(Object obj) {
-        return mapper.convertValue(obj, new TypeReference<>() {
-        });
+        return mapper.convertValue(obj, new TypeReference<>() {});
     }
 
     public static <T> T convertTo(Object obj,TypeReference<T> reference) {

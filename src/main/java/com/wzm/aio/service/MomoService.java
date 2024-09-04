@@ -9,12 +9,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ClientResponse;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import org.springframework.web.reactive.function.client.ExchangeFunction;
-import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -25,7 +19,6 @@ public class MomoService {
 
     private final MomoApi momoApi;
 
-    private volatile MomoCookies momoCookies = null;
 
     public  MomoService(MomoApi momoApi){
         this.momoApi = momoApi;
@@ -33,13 +26,13 @@ public class MomoService {
 
     /**
      * 用户登录，登录成功后会缓存登录信息到momoCookies
-     * @param user 用户信息
+     * @param momoUser 用户信息
      * @return 登录成功返回true，否则返回false
      */
 
-    public boolean login(User user){
-        logger.info("用户登录:" + user);
-        ResponseEntity<String> result = momoApi.login(JacksonUtils.toStringMap(user));
+    public boolean login(MomoUser momoUser){
+        logger.info("用户登录:" + momoUser);
+        ResponseEntity<String> result = momoApi.login(JacksonUtils.toStringMap(momoUser));
         if (!requestSuccess(result))
             return false;
         return generateCookie(result.getHeaders());
@@ -49,13 +42,13 @@ public class MomoService {
     //用户登出
     public void logout(){
         momoApi.logout();
-        this.momoCookies = null;
+        MomoCookies.INSTANCE.clear();
         logger.info("用户登出成功");
     }
 
     //获取当前用户的所有notepad
     public List<MomoNotepadInfo> getAllNotepad(){
-        String userToken = this.momoCookies.getUserToken();
+        String userToken = MomoCookies.INSTANCE.getCookiesMap().get(MomoCookies.USER_KEY).get(0);
         ResponseEntity<String> result = momoApi.searchNotepad(userToken,new MomoNotepadRequestBody());
         if (result.getStatusCode().isError()){
             logger.info("获取notepadInfoList失败,响应码为:" + result.getStatusCode());
@@ -81,28 +74,12 @@ public class MomoService {
     }
 
 
-    private Map<String,String> cookiesMap(){
-        return JacksonUtils.convertToStrMap(this.momoCookies);
-    }
-
     private boolean generateCookie(HttpHeaders headers){
         List<String> setCookies = headers.get(HttpHeaders.SET_COOKIE);
         if (setCookies == null)
             return false;
-        MomoCookies momoCookies = new MomoCookies();
-        try {
-            for(String cookies : setCookies){
-                if (cookies.startsWith(MomoCookies.USER_KEY))
-                    momoCookies.setUserToken(cookies.split(";")[0].split("=")[1]);
-                if (cookies.startsWith(MomoCookies.PHPSESSID_KEY))
-                    momoCookies.setPhpsessid(cookies.split(";")[0].split("=")[1]);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            return false;
-        }
-        this.momoCookies = momoCookies;
-        logger.info("登录成功，当前用户Cookies为:" + momoCookies);
+        MomoCookies.INSTANCE.fill(setCookies);
+        logger.info("登录成功，当前用户Cookies为:" + MomoCookies.INSTANCE.getCookiesMap());
         return true;
     }
 
@@ -114,21 +91,6 @@ public class MomoService {
         Map<String, Object> map = JacksonUtils.parseToMap(result.getBody());
         Object valid = map.get("valid");
         return valid != null && ("1".equals(valid.toString()) || Boolean.TRUE.equals(valid) );
-    }
-
-    public class CookiesFilter implements ExchangeFilterFunction{
-        @Override
-        public Mono<ClientResponse> filter(ClientRequest request, ExchangeFunction next) {
-            if (momoCookies == null)
-                return next.exchange(request);
-            Map<String, String> map = cookiesMap();
-            LinkedMultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-            for(Map.Entry<String,String> entry:map.entrySet()){
-                multiValueMap.put(entry.getKey(),List.of(entry.getValue()));
-            }
-            ClientRequest filtered = ClientRequest.from(request).cookies(cookies -> cookies.addAll(multiValueMap)).build();
-            return next.exchange(filtered);
-        }
     }
 
 }

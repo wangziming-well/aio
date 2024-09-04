@@ -27,9 +27,7 @@ public class MomoAspect {
     //对MomoService中所有非login/logout方法
     @Before("allMethod() && !authMethod()")
     public void checkCookies(JoinPoint joinPoint){
-        MomoService momoService = (MomoService) joinPoint.getThis();
-        MomoCookies momoCookies =(MomoCookies) ReflectUtils.getField(momoService, "momoCookies");
-        if (momoCookies == null)
+        if (MomoCookies.INSTANCE.isEmpty())
             throw new RuntimeException("调用方法" +joinPoint.getSignature()+"前请先登录");
     }
 

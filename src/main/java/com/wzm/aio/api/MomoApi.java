@@ -3,7 +3,6 @@ package com.wzm.aio.api;
 import com.wzm.aio.domain.MomoNotepadRequestBody;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,7 +36,7 @@ public interface MomoApi {
      * 获取当前用户所有的notepad信息
      * @param token 用户登录cookies中的token
      * @param body 请求体MomoNotepadRequestBody
-     * @return
+     * @return 响应notepad列表
      */
     @PostExchange(value = "v3/api/notepad/search",contentType = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<String> searchNotepad(@RequestParam String token, @RequestBody MomoNotepadRequestBody body);
