@@ -4,11 +4,14 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.wzm.aio.api.MomoApi;
 import com.wzm.aio.domain.*;
 import com.wzm.aio.util.JacksonUtils;
+import com.wzm.aio.util.MomoCookiesHolder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 
@@ -35,34 +38,40 @@ public class MomoService {
         ResponseEntity<String> result = momoApi.login(JacksonUtils.toStringMap(momoUser));
         if (!requestSuccess(result))
             return false;
-        return generateCookie(result.getHeaders());
+        MomoCookies cookies = MomoCookies.generate(result.getHeaders());
+        logger.info("登录成功，当前用户cookies为:" + cookies);
+        MomoCookiesHolder.INSTANCE.set(cookies);
+        return true;
     }
 
 
     //用户登出
     public void logout(){
+        logger.info("用户退出登录");
         momoApi.logout();
-        MomoCookies.INSTANCE.clear();
+        MomoCookiesHolder.INSTANCE.clear();
         logger.info("用户登出成功");
     }
 
     //获取当前用户的所有notepad
     public List<MomoNotepadInfo> getAllNotepad(){
-        String userToken = MomoCookies.INSTANCE.getCookiesMap().get(MomoCookies.USER_KEY).get(0);
+        String userToken = MomoCookiesHolder.INSTANCE.get().getUserToken();
         ResponseEntity<String> result = momoApi.searchNotepad(userToken,new MomoNotepadRequestBody());
-        if (result.getStatusCode().isError()){
-            logger.info("获取notepadInfoList失败,响应码为:" + result.getStatusCode());
+        if (!requestSuccess(result))
             return Collections.emptyList();
-        }
         Map<String, Object> map = JacksonUtils.parseToMap(result.getBody());
         Object notepads = map.get("notepad");
-        return JacksonUtils.convertTo(notepads, new TypeReference<>() {});
+        List<MomoNotepadInfo> momoNotepadInfoList = JacksonUtils.convertTo(notepads, new TypeReference<>() {
+        });
+        logger.info("获取momoNotepadInfoList" + momoNotepadInfoList);
+        return momoNotepadInfoList;
     }
     //保存notepad，如果notepad的id为0，意为新增一个notepad
     public boolean saveNotepad(MomoNotepad notepad){
         logger.info("保存notepad:" + notepad);
         Map<String, String> notepadMap = JacksonUtils.convertToStrMap(notepad);
         ResponseEntity<String> result = momoApi.saveNotepad(notepadMap);
+        System.out.println(result.getStatusCode());
         return requestSuccess(result);
     }
 
@@ -74,23 +83,29 @@ public class MomoService {
     }
 
 
-    private boolean generateCookie(HttpHeaders headers){
-        List<String> setCookies = headers.get(HttpHeaders.SET_COOKIE);
-        if (setCookies == null)
-            return false;
-        MomoCookies.INSTANCE.fill(setCookies);
-        logger.info("登录成功，当前用户Cookies为:" + MomoCookies.INSTANCE.getCookiesMap());
-        return true;
-    }
-
     private boolean requestSuccess(ResponseEntity<String> result){
-        if (result.getStatusCode().isError())
+        HttpStatusCode statusCode = result.getStatusCode();
+        if (statusCode.is3xxRedirection()){
+            logger.info("请求失败，请求码:" + statusCode + ",用户cookies可能失效");
             return false;
-        if (result.getBody()== null)
+        }
+
+        if (statusCode.isError()){
+            logger.info("请求失败，请求码:" + statusCode );
             return false;
-        Map<String, Object> map = JacksonUtils.parseToMap(result.getBody());
+        }
+        String body = result.getBody();
+        if (!StringUtils.hasText(body)){
+            logger.info("请求失败，请求体为空");
+            return false;
+        }
+        Map<String, Object> map = JacksonUtils.parseToMap(body);
         Object valid = map.get("valid");
-        return valid != null && ("1".equals(valid.toString()) || Boolean.TRUE.equals(valid) );
+        if(valid == null || !"1".equals(valid.toString()) && Boolean.FALSE.equals(valid)){
+            logger.info("请求失败，响应为:" + result.getBody());
+            return false;
+        }
+        return  true;
     }
 
 }

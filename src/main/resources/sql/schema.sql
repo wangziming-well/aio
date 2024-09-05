@@ -1,6 +1,5 @@
 
-
-drop table if exists dictionary;
+drop table if exists  dictionary;
 
 create table dictionary (
     id int primary key auto_increment,

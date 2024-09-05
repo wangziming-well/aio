@@ -25,10 +25,12 @@ public class AioApplication {
         ConfigurableApplicationContext run = SpringApplication.run(AioApplication.class, args);
         MomoService service = run.getBean(MomoService.class);
         service.login(new MomoUser("441678514@qq.com","wang998321"));
-        List<MomoNotepadInfo> allNotepad = service.getAllNotepad();
-        System.out.println(allNotepad);
-        service.saveNotepad(MomoNotepad.builder().build());
-        System.out.println(service);
+        service.getAllNotepad();
+        service.logout();
+        /*MomoNotepad build = MomoNotepad.builder().id("3533394").title("编程用").brief("test").content("hello world").build();
+        System.out.println(service.saveNotepad(build));
+        service.logout();
+        System.out.println(service.saveNotepad(build));*/
     }
 
 }

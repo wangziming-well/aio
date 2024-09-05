@@ -1,91 +1,69 @@
 package com.wzm.aio.domain;
 
+import lombok.Getter;
+import lombok.ToString;
+import org.springframework.http.HttpHeaders;
+import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+
+@Getter
+@ToString
 public class MomoCookies {
 
-    private MomoCookies(){}
+
+    public MomoCookies(String userToken, String phpsessid, int maxAge) {
+        this.userToken = userToken;
+        this.phpsessid = phpsessid;
+        this.maxAge = maxAge;
+        this.setTime = System.currentTimeMillis();
+    }
 
     public static final String USER_KEY = "userToken";
-
     public static final String PHPSESSID_KEY = "PHPSESSID";
 
-    public static final MomoCookies INSTANCE = new MomoCookies();
+    private final String userToken;
+    private final String phpsessid;
+    private final int maxAge; // s
+    private final long setTime; //ms
 
-    private volatile MultiValueMap<String,String> cookiesMap;
-    private volatile boolean empty = true;
+    public MultiValueMap<String, String> toMap() {
+        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.put(USER_KEY, List.of(this.userToken));
+        map.put(PHPSESSID_KEY, List.of(this.phpsessid));
+        return map;
+    }
 
-    private volatile long setTime = 0L;
+    //判断当前cookies是否过期
+    public boolean isExpire() {
+        return System.currentTimeMillis() - this.setTime > this.maxAge * 1000L;
 
-    private final ReadWriteLock  lock = new ReentrantReadWriteLock();
+    }
 
-    public void fill(List<String> cookieStrings){
-        Lock writeLock = lock.writeLock();
-        try {
-            writeLock.lock();
-            LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-            for(String cookies : cookieStrings){
-                System.out.println(cookies);
-                if (cookies.startsWith(MomoCookies.USER_KEY)){
-                    map.put(USER_KEY,List.of(cookies.split(";")[0].split("=")[1]) );
-                }
-/*                if (cookies.startsWith(MomoCookies.PHPSESSID_KEY)){
-                    map.put(PHPSESSID_KEY,List.of(cookies.split(";")[0].split("=")[1]) );
-                }*/
+    //根据HTTP header 解析获取MomoCookies实例，解析失败将抛出异常
+    public static MomoCookies generate(HttpHeaders headers) {
+        List<String> setCookies = headers.get(HttpHeaders.SET_COOKIE);
+        Assert.notNull(setCookies, "当前header没有Set-Cookie属性");
+        String userToken = null;
+        String phpsessid = null;
+        int maxAge = Integer.MAX_VALUE;
+        for (String cookies : setCookies) {
+            if (cookies.startsWith(USER_KEY)) {
+                userToken = cookies.split(";")[0].split("=")[1];
+                maxAge = Math.min(maxAge, Integer.parseInt(cookies.split(";")[2].split("=")[1]));
             }
-            if (map.size() == 1){
-                this.empty = false;
-                this.cookiesMap = map;
+            if (cookies.startsWith(PHPSESSID_KEY)) {
+                phpsessid = cookies.split(";")[0].split("=")[1];
+                maxAge = Math.min(maxAge, Integer.parseInt(cookies.split(";")[2].split("=")[1]));
             }
-            else
-                clear();
-
-        } catch (Exception e){
-            clear();
-            throw new RuntimeException("填充MomoCookies失败",e);
-        } finally {
-            writeLock.unlock();
         }
+        if (!(StringUtils.hasText(userToken) && StringUtils.hasText(phpsessid)))
+            throw new IllegalArgumentException("Set-Cookie首部缺少下面字段之一:[" + USER_KEY + "," + PHPSESSID_KEY + "]");
+        return new MomoCookies(userToken, phpsessid, maxAge);
     }
 
-    public void clear(){
-        Lock writeLock = lock.writeLock();
-        try{
-            writeLock.lock();
-            this.cookiesMap = null;
-            this.empty = true;
-        }  finally {
-            writeLock.unlock();
-        }
-    }
-
-    public boolean isEmpty() {
-        Lock readLock = lock.readLock();
-        boolean result;
-        try {
-            readLock.lock();
-            result = this.empty;
-        } finally {
-            readLock.unlock();
-        }
-        return result;
-    }
-
-    public MultiValueMap<String, String> getCookiesMap() {
-        Lock readLock = lock.readLock();
-        MultiValueMap<String, String> result;
-        try {
-            readLock.lock();
-            result = this.cookiesMap;
-        } finally {
-            readLock.unlock();
-        }
-        return result;
-    }
 }

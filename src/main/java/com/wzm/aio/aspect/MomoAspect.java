@@ -1,9 +1,6 @@
 package com.wzm.aio.aspect;
 
 
-import com.wzm.aio.domain.MomoCookies;
-import com.wzm.aio.service.MomoService;
-import com.wzm.aio.util.ReflectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.JoinPoint;
@@ -27,8 +24,8 @@ public class MomoAspect {
     //对MomoService中所有非login/logout方法
     @Before("allMethod() && !authMethod()")
     public void checkCookies(JoinPoint joinPoint){
-        if (MomoCookies.INSTANCE.isEmpty())
-            throw new RuntimeException("调用方法" +joinPoint.getSignature()+"前请先登录");
+/*        if (MomoUserTokenManager.INSTANCE.isEmpty())
+            throw new RuntimeException("调用方法" +joinPoint.getSignature()+"前请先登录");*/
     }
 
 }
