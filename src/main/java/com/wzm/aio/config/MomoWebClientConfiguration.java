@@ -2,19 +2,15 @@ package com.wzm.aio.config;
 
 import com.wzm.aio.api.MomoApi;
 import com.wzm.aio.domain.MomoCookies;
-import com.wzm.aio.service.MomoService;
 import lombok.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.*;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class MomoWebClientConfiguration {

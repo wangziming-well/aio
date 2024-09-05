@@ -20,6 +20,9 @@ public class MomoCookies {
 
     private volatile MultiValueMap<String,String> cookiesMap;
     private volatile boolean empty = true;
+
+    private volatile long setTime = 0L;
+
     private final ReadWriteLock  lock = new ReentrantReadWriteLock();
 
     public void fill(List<String> cookieStrings){
@@ -28,15 +31,15 @@ public class MomoCookies {
             writeLock.lock();
             LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<>();
             for(String cookies : cookieStrings){
+                System.out.println(cookies);
                 if (cookies.startsWith(MomoCookies.USER_KEY)){
                     map.put(USER_KEY,List.of(cookies.split(";")[0].split("=")[1]) );
                 }
-                if (cookies.startsWith(MomoCookies.PHPSESSID_KEY)){
+/*                if (cookies.startsWith(MomoCookies.PHPSESSID_KEY)){
                     map.put(PHPSESSID_KEY,List.of(cookies.split(";")[0].split("=")[1]) );
-
-                }
+                }*/
             }
-            if (map.size() == 2){
+            if (map.size() == 1){
                 this.empty = false;
                 this.cookiesMap = map;
             }
