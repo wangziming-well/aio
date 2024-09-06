@@ -13,6 +13,7 @@ import org.springframework.web.service.annotation.PostExchange;
 
 /**
  * 墨墨背单词HTTP API
+ * MomoOpenApi保证方法返回的ResponseEntity，其getBody()不为null
  */
 @HttpExchange
 public interface MomoOpenApi {

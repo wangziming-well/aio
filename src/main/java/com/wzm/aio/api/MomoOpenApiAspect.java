@@ -1,21 +1,15 @@
 package com.wzm.aio.api;
 
-import com.wzm.aio.service.MomoService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 @Aspect
@@ -48,8 +42,6 @@ public class MomoOpenApiAspect {
         MomoResponse<?> body = result.getBody();
         if (body == null)
             throw new MomoApiResponseException("响应错误，响应体为空");
-        if (!body.isSuccess())
-            throw new MomoApiResponseException("响应错误，响应体:" + body);
     }
 
     public static class MomoApiResponseException extends WebClientException {

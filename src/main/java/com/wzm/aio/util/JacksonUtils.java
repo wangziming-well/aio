@@ -3,6 +3,7 @@ package com.wzm.aio.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,10 @@ public abstract class JacksonUtils {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
+    static {
+        mapper.registerModule(new JavaTimeModule());
+    }
+
 
     public static Map<String, String> convertToStrMap(Object obj) {
         return mapper.convertValue(obj, new TypeReference<>() {});
@@ -18,7 +23,10 @@ public abstract class JacksonUtils {
 
     public static <T> T convertTo(Object obj,TypeReference<T> reference) {
         return mapper.convertValue(obj, reference);
+    }
 
+    public static <T> T convertTo(Object obj,Class<T> clazz) {
+        return mapper.convertValue(obj, new TypeReference<>() {});
     }
 
 

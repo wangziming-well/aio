@@ -1,55 +1,47 @@
 package com.wzm.aio.service;
 
-import com.wzm.aio.api.MomoOpenApi;
-import com.wzm.aio.api.MomoResponse;
-import com.wzm.aio.api.entity.Notepad;
-import com.wzm.aio.api.entity.NotepadList;
-import com.wzm.aio.domain.*;
-import com.wzm.aio.properties.MomoProperties;
+
+import com.wzm.aio.api.entity.MomoCloudNotepad;
+import com.wzm.aio.domain.MomoLocalNotepad;
+import lombok.Getter;
+import lombok.ToString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MomoService {
 
-    private static final Log logger = LogFactory.getLog(MomoService.class);
+    private final Log logger = LogFactory.getLog(MomoService.class);
 
-    private final MomoOpenApi momoOpenApi;
+    private final MomoLocalService localService;
+    private final MomoCloudService cloudService;
 
-    public MomoService(MomoOpenApi momoOpenApi) {
-        this.momoOpenApi = momoOpenApi;
-
+    public MomoService(MomoLocalService localService, MomoCloudService cloudService){
+        this.localService = localService;
+        this.cloudService = cloudService;
     }
 
 
-    //获取当前用户的所有notepad
-    public List<Notepad> getAllNotepads() {
-        ResponseEntity<MomoResponse<NotepadList>> result = momoOpenApi.getAllNotepads();
-        NotepadList data = result.getBody().getData();
-        return data.getNotepads();
-    }
 
-    public boolean deleteNotepad(String id) {
-        ResponseEntity<MomoResponse<Void>> response = momoOpenApi.deleteNotepad(id);
-
+    //远端词库同步到本地
+    public boolean syncCloud(){
+        List<MomoCloudNotepad> allMomoCloudNotepads = cloudService.getAllNotepads();
+        for(MomoCloudNotepad momoCloudNotepad : allMomoCloudNotepads){
+            MomoLocalNotepad local = momoCloudNotepad.toLocal();
+            //boolean insert = localService.insert(local);
+            //System.out.println(insert);
+        }
         return false;
     }
 
-
-    public boolean saveNotepad(MomoNotepad notepad) {
-
-        return true;
-    }
-
-    public boolean deleteNotepad(MomoNotepad notepad) {
-
-        return true;
-    }
 
 
 }

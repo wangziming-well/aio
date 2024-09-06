@@ -1,11 +1,12 @@
 package com.wzm.aio.service;
 
-
+import com.wzm.aio.domain.MomoLocalNotepad;
 import com.wzm.aio.domain.Word;
+import com.wzm.aio.mapper.DictionaryMapper;
+import com.wzm.aio.mapper.MomoNotepadMapper;
+import com.wzm.aio.mapper.NotepadDictMapper;
 import lombok.Getter;
 import lombok.ToString;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,37 +17,62 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CloudDictService {
+public class MomoLocalService {
 
-    private final Log logger = LogFactory.getLog(CloudDictService.class);
 
-    private final DictionaryService  dictionaryService;
-    private final MomoService momoService;
+    private final MomoNotepadMapper momoNotepadMapper;
+    private final DictionaryMapper dictionaryMapper;
+    private final NotepadDictMapper notepadDictMapper;
 
-    public CloudDictService(DictionaryService dictionaryService, MomoService momoService){
-        this.dictionaryService = dictionaryService;
-        this.momoService = momoService;
+    public MomoLocalService(MomoNotepadMapper momoNotepadMapper
+    , DictionaryMapper dictionaryMapper, NotepadDictMapper notepadDictMapper){
+
+        this.momoNotepadMapper = momoNotepadMapper;
+        this.dictionaryMapper = dictionaryMapper;
+        this.notepadDictMapper = notepadDictMapper;
     }
 
-    private static final String WORD_SEP = " ";
 
-    private static final char[] SEPARATOR = new char[]{';','；',',','，','.','。'};
-
-    //本地词库同步到云端
-    public boolean syncCloud(){
-        List<Word> allWord = dictionaryService.findAllWord();
-        String content = allWord.stream()
-                .map(Word::getWord)
-                .collect(Collectors.joining(WORD_SEP));
-
-        return false;
+    public boolean insertNotepad(MomoLocalNotepad notepad){
+        return momoNotepadMapper.insert(notepad);
     }
 
-    public EndWordResult addWord(String... words){
-        return addWord(List.of(words));
+    public MomoLocalNotepad selectNotepadById(String id){
+        return momoNotepadMapper.selectById(id);
     }
 
-    public EndWordResult addWord(List<String> words){
+    public List<MomoLocalNotepad> selectAllNotepad(){
+        return momoNotepadMapper.selectAll();
+    }
+
+    public boolean insertWord(String word){
+        return dictionaryMapper.insert(word);
+    }
+
+    public boolean deleteWord(String word){
+        return dictionaryMapper.deleteByWord(word);
+    }
+    public boolean deleteWordById(String id){
+        return dictionaryMapper.deleteById(id);
+    }
+    public Word selectWordById(String id){
+        return dictionaryMapper.selectById(id);
+    }
+
+    public Word selectWord(String word){
+        return dictionaryMapper.selectByWord(word);
+    }
+
+    public List<Word> selectAllWords(){
+        return dictionaryMapper.selectAll();
+    }
+
+
+    public EndWordResult addWords(String... words){
+        return addWords(List.of(words));
+    }
+
+    public EndWordResult addWords(List<String> words){
         List<String> all = words.stream()
                 .map(String::toLowerCase)
                 .distinct()
@@ -54,7 +80,7 @@ public class CloudDictService {
         ArrayList<String> success = new ArrayList<>();
         ArrayList<String> fail = new ArrayList<>();
         for (String word : all){
-            boolean result = dictionaryService.addWord(word);
+            boolean result = insertWord(word);
             if (result)
                 success.add(word);
             else
@@ -63,8 +89,8 @@ public class CloudDictService {
         return new EndWordResult(all,success,fail);
     }
 
-    public EndWordResult addWord(String text){
-        return addWord(parse(text));
+    public EndWordResult addWords(String text){
+        return addWords(parse(text));
     }
 
 
@@ -89,7 +115,9 @@ public class CloudDictService {
                 .collect(Collectors.toList());
     }
 
+    private static final String WORD_SEP = " ";
 
+    private static final char[] SEPARATOR = new char[]{';','；',',','，','.','。'};
     @Getter
     @ToString
     public static class EndWordResult{
@@ -124,6 +152,5 @@ public class CloudDictService {
         }
 
     }
-
 
 }

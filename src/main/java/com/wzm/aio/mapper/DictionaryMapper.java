@@ -8,16 +8,23 @@ import java.util.List;
 @Mapper
 public interface DictionaryMapper {
 
+    @Select("SELECT * FROM dictionary WHERE id = #{id}")
+    Word selectById(@Param("id") String id);
+
     @Select("SELECT * FROM dictionary WHERE word = #{word}")
-    Word find(@Param("word") String word);
+    Word selectByWord(@Param("word") String word);
 
     @Select("SELECT * FROM dictionary")
-    List<Word> findAll();
+    List<Word> selectAll();
 
     @Insert("insert into dictionary (word) values (#{word})")
-    boolean addWord(String word);
+    boolean insert(String word);
     @Delete("delete from dictionary where word = #{word}")
-    boolean deleteWord(String word);
+    boolean deleteByWord(String word);
+
+    @Delete("delete from dictionary where id = #{id}")
+    boolean deleteById(String id);
+
 
 
 }
