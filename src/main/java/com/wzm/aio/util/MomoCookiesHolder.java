@@ -33,7 +33,7 @@ public class MomoCookiesHolder {
     public boolean isEmpty() {
         return this.momoCookies == null;
     }
-
+    //当前cookies是否可用
     public boolean isActive(){
         MomoCookies cookies = this.momoCookies;
         return cookies != null && !cookies.isExpire();

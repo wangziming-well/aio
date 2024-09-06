@@ -1,13 +1,14 @@
 package com.wzm.aio.config;
 
-import com.wzm.aio.api.MomoApi;
-import com.wzm.aio.domain.MomoCookies;
-import com.wzm.aio.util.MomoCookiesHolder;
+import com.wzm.aio.api.MomoOpenApi;
+import com.wzm.aio.properties.MomoProperties;
 import lombok.NonNull;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.*;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
@@ -19,31 +20,44 @@ import java.util.List;
 @Configuration
 public class MomoWebClientConfiguration {
 
+    private final MomoProperties properties;
+
+    private static final String BASE_URL = "https://open.maimemo.com/open/api/v1/notepads";
+
+    public MomoWebClientConfiguration(MomoProperties properties) {
+        this.properties = properties;
+    }
+
+
+    private void setDefaultHeaders(HttpHeaders headers){
+        headers.setBearerAuth(properties.getToken());
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    }
+
     @Bean
-    MomoApi demoApi() {
+    MomoOpenApi demoApi() {
         WebClient webClient = WebClient.builder()
-                .baseUrl("https://www.maimemo.com")
+                .baseUrl(BASE_URL)
+                .defaultHeaders(this::setDefaultHeaders)
                 .codecs(configurer
                         -> configurer.defaultCodecs()
-                        .maxInMemorySize(1024*1024*2))
-                .filter(new CookiesFilter())
+                        .maxInMemorySize(1024 * 1024 * 2))
+                .filter(new MomoApiLogFilter())
                 .build();
         WebClientAdapter adapter = WebClientAdapter.create(webClient);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-        return factory.createClient(MomoApi.class);
+        return factory.createClient(MomoOpenApi.class);
     }
-    //为默默背单词HTTP请求添加cookies
-    private static class CookiesFilter implements ExchangeFilterFunction {
+
+    private static class MomoApiLogFilter implements ExchangeFilterFunction {
+        private final Log logger = LogFactory.getLog(MomoApiLogFilter.class);
+
         @Override
         @NonNull
-        public Mono<ClientResponse> filter(@NonNull ClientRequest request,@NonNull ExchangeFunction next) {
-            if (!MomoCookiesHolder.INSTANCE.isActive())
-                return next.exchange(request);
-            ClientRequest filtered = ClientRequest
-                    .from(request)
-                    .cookies(cookies -> cookies.addAll(MomoCookiesHolder.INSTANCE.get().toMap()))
-                    .build();
-            return next.exchange(filtered);
+        public Mono<ClientResponse> filter(@NonNull ClientRequest request, @NonNull ExchangeFunction next) {
+            logger.info("发起请求:" + request.logPrefix() + "HTTP " + request.method() + " " +
+                    request.url() + ", headers=" + request.headers());
+            return next.exchange(request);
         }
     }
 }
