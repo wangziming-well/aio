@@ -3,6 +3,7 @@ package com.wzm.aio;
 import com.wzm.aio.api.entity.MomoCloudNotepad;
 import com.wzm.aio.domain.MomoLocalNotepad;
 import com.wzm.aio.domain.NotepadDictPair;
+import com.wzm.aio.dto.MomoNotepadDTO;
 import com.wzm.aio.mapper.MomoNotepadMapper;
 import com.wzm.aio.mapper.NotepadDictMapper;
 import com.wzm.aio.service.MomoCloudService;
@@ -30,7 +31,10 @@ public class AioApplication {
         MomoCloudService cloudService = run.getBean(MomoCloudService.class);
         MomoNotepadMapper notepadMapper = run.getBean(MomoNotepadMapper.class);
         NotepadDictMapper notepadDictMapper = run.getBean(NotepadDictMapper.class);
-        service.push();
+        MomoNotepadDTO momoNotepadDTO = new MomoNotepadDTO();
+        momoNotepadDTO.setId(1);
+        momoNotepadDTO.setTitle("ewts");
+        service.addNotepad(momoNotepadDTO);
         System.exit(0);
     }
 

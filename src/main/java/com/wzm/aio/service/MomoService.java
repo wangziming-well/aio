@@ -3,6 +3,8 @@ package com.wzm.aio.service;
 
 import com.wzm.aio.api.entity.MomoCloudNotepad;
 import com.wzm.aio.domain.MomoLocalNotepad;
+import com.wzm.aio.dto.MomoNotepadDTO;
+import com.wzm.aio.util.BeanUtils;
 import com.wzm.aio.util.WordListParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,6 +56,33 @@ public class MomoService {
         return false;
     }
 
+    public void addNotepad(MomoNotepadDTO notepadDTO){
+        MomoLocalNotepad localNotepad = BeanUtils.transfer(notepadDTO, MomoLocalNotepad.class);
+        MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
+        String cloudId = cloudService.createNotepad(cloudNotepad);
+        localNotepad.setCloudId(cloudId);
+        localService.addNotepad(localNotepad);
+    }
+
+    public void updateNotepad(MomoNotepadDTO notepadDTO){
+        MomoLocalNotepad localNotepad = BeanUtils.transfer(notepadDTO, MomoLocalNotepad.class);
+        MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
+        localService.updateNotepad(localNotepad);
+        cloudService.updateNotepad(cloudNotepad);
+    }
+
+    public void deleteNotepad(int localId){
+        MomoLocalNotepad notepad = localService.getNotepad(localId);
+        String cloudId = notepad.getCloudId();
+        localService.deleteNotepad(localId);
+        cloudService.deleteNotepad(cloudId);
+
+    }
+
+    public MomoNotepadDTO getNotepad(int localId){
+        MomoLocalNotepad notepad = localService.getNotepad(localId);
+        return BeanUtils.transfer(notepad,MomoNotepadDTO.class);
+    }
 
 
 }
