@@ -2,19 +2,23 @@ package com.wzm.aio.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wzm.aio.domain.MomoLocalNotepad;
-import com.wzm.aio.util.JacksonUtils;
+import com.wzm.aio.util.WordListParser;
 import lombok.Data;
 import org.apache.commons.beanutils.BeanUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 public class MomoCloudNotepad {
+    public enum Type {
+        FAVORITE, NOTEPAD
+    }
 
+    public enum Stats {
+        PUBLISHED, UNPUBLISHED, DELETE
+    }
 
     private String id;
     private Type type;
@@ -37,7 +41,10 @@ public class MomoCloudNotepad {
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-        local.setTags(String.join(" ", this.tags));
+        local.setCloudId(this.id);
+        local.setId(0);
+        local.setWords(WordListParser.parse(this.content));
+        local.setTags(WordListParser.join(this.tags));
         return local;
     }
 
@@ -90,14 +97,6 @@ public class MomoCloudNotepad {
         private String type;
         private String chapter;
         private String word;
-    }
-
-    public enum Stats {
-        PUBLISHED, UNPUBLISHED, DELETE
-    }
-
-    public enum Type {
-        FAVORITE, NOTEPAD
     }
 
 

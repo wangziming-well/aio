@@ -1,7 +1,10 @@
 package com.wzm.aio;
 
 import com.wzm.aio.api.entity.MomoCloudNotepad;
+import com.wzm.aio.domain.MomoLocalNotepad;
+import com.wzm.aio.domain.NotepadDictPair;
 import com.wzm.aio.mapper.MomoNotepadMapper;
+import com.wzm.aio.mapper.NotepadDictMapper;
 import com.wzm.aio.service.MomoCloudService;
 import com.wzm.aio.service.MomoLocalService;
 import com.wzm.aio.service.MomoService;
@@ -18,11 +21,17 @@ import java.util.List;
 @EnableAspectJAutoProxy
 @ConfigurationPropertiesScan({ "com.wzm.aio.properties" })
 public class AioApplication {
-    private static String id = "np-UcgS1JEXkbpSPLNKOeHjRGs4rioocUyKagCOsYiiNeDwP7TgUc3RNLuaM6FCHF64";
+    private static String id = "np-mEKmVvdqyihHhW_v5u9_CzfDa__YnezpAniNjtnfaZqKN0BNxBtqJpj3DkNCugRt";
 
     public static void main(String[] args) {
        ConfigurableApplicationContext run = SpringApplication.run(AioApplication.class, args);
-        MomoLocalService service = run.getBean(MomoLocalService.class);
+        MomoService service = run.getBean(MomoService.class);
+        MomoLocalService localService = run.getBean(MomoLocalService.class);
+        MomoCloudService cloudService = run.getBean(MomoCloudService.class);
+        MomoNotepadMapper notepadMapper = run.getBean(MomoNotepadMapper.class);
+        NotepadDictMapper notepadDictMapper = run.getBean(NotepadDictMapper.class);
+        service.push();
+        System.exit(0);
     }
 
     @SneakyThrows

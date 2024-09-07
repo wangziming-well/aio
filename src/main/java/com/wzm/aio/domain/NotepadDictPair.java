@@ -4,8 +4,8 @@ package com.wzm.aio.domain;
 import lombok.Data;
 
 @Data
-public class NotepadDictEntry {
+public class NotepadDictPair {
 
-    private String notepadId;
+    private int notepadId;
     private int dictId;
 }

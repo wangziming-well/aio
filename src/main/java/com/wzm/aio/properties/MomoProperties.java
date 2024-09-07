@@ -22,6 +22,7 @@ public class MomoProperties {
         private String id;
         private String title;
         private String brief;
+        private int maxCount;
     }
 
 

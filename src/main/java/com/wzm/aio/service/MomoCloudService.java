@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.*;
 
@@ -51,8 +52,13 @@ public class MomoCloudService {
 
     //获取当前用户的所有notepad
     public List<MomoCloudNotepad> getAllNotepads() {
-        ResponseEntity<MomoResponse<NotepadList>> result = momoOpenApi.getAllNotepads();
-        return getData(result).getNotepads();
+        ResponseEntity<MomoResponse<NotepadList>> response = momoOpenApi.getAllNotepads();
+        List<MomoCloudNotepad> notepads = getData(response).getNotepads();
+        ArrayList<MomoCloudNotepad>  result = new ArrayList<>();
+        for (MomoCloudNotepad notepad : notepads){
+            result.add(getNotepad(notepad.getId()));
+        }
+        return result;
     }
 
     public boolean deleteNotepad(String id) {
@@ -60,7 +66,13 @@ public class MomoCloudService {
         return isSuccess(response);
     }
 
-
+    public void deleteAllNotepad(){
+        ResponseEntity<MomoResponse<NotepadList>> response = momoOpenApi.getAllNotepads();
+        List<MomoCloudNotepad> notepads = getData(response).getNotepads();
+        for (MomoCloudNotepad notepad : notepads){
+            deleteNotepad(notepad.getId());
+        }
+    }
 
     public boolean updateNotepad(MomoCloudNotepad momoCloudNotepad) {
         checkRequired(momoCloudNotepad);
@@ -70,12 +82,7 @@ public class MomoCloudService {
         return isSuccess(result);
     }
 
-    public boolean updateNotepad(String content){
-        MomoProperties.NotepadProperties defaultNotepad = properties.getNotepad();
-        MomoCloudNotepad momoCloudNotepad = MomoCloudNotepad.builder().id(defaultNotepad.getId()).brief(defaultNotepad.getBrief())
-                .title(defaultNotepad.getTitle()).content(content).build();
-        return updateNotepad(momoCloudNotepad);
-    }
+
 
     /**
      *  创建一个notepad
@@ -84,6 +91,9 @@ public class MomoCloudService {
      */
     public String createNotepad(MomoCloudNotepad momoCloudNotepad) {
         checkRequired(momoCloudNotepad);
+        int maxCount = properties.getNotepad().getMaxCount();
+        if (getAllNotepads().size() >= maxCount)
+            throw new IndexOutOfBoundsException("云词库已经达到最大数量:" + maxCount);
         ResponseEntity<MomoResponse<OneNotepad>> result = momoOpenApi.createNotepad(new OneNotepad(momoCloudNotepad));
         if (!isSuccess(result))
             return "";
@@ -103,8 +113,15 @@ public class MomoCloudService {
         return data.getNotepad();
     }
 
-    public MomoCloudNotepad getNotePad(){
-        return getNotepad(properties.getNotepad().getId());
+    public boolean exists(String id){
+        try{
+            getNotepad(id);
+        } catch (WebClientResponseException e){
+            if (e.getMessage().startsWith("503 Service Unavailable"))
+                return false;
+            else
+                throw e;
+        }
+        return true;
     }
-
 }

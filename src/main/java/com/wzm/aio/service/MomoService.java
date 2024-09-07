@@ -3,18 +3,12 @@ package com.wzm.aio.service;
 
 import com.wzm.aio.api.entity.MomoCloudNotepad;
 import com.wzm.aio.domain.MomoLocalNotepad;
-import lombok.Getter;
-import lombok.ToString;
+import com.wzm.aio.util.WordListParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class MomoService {
@@ -31,13 +25,31 @@ public class MomoService {
 
 
 
-    //远端词库同步到本地
-    public boolean syncCloud(){
-        List<MomoCloudNotepad> allMomoCloudNotepads = cloudService.getAllNotepads();
-        for(MomoCloudNotepad momoCloudNotepad : allMomoCloudNotepads){
-            MomoLocalNotepad local = momoCloudNotepad.toLocal();
-            //boolean insert = localService.insert(local);
-            //System.out.println(insert);
+    //云端词库同步到本地
+    public boolean pull(){
+        List<MomoCloudNotepad> cloudNotepads = cloudService.getAllNotepads();
+        localService.clearNotepad();
+        for(MomoCloudNotepad cloudNotepad : cloudNotepads){
+            MomoLocalNotepad local = cloudNotepad.toLocal();
+            boolean result = localService.addNotepad(local);
+            if (!result)
+                return false;
+        }
+        return true;
+    }
+    //本地notepad同步到云端
+    public boolean push(){
+        List<MomoLocalNotepad> localNotepads =  localService.getAllNotepads();
+        for (MomoLocalNotepad localNotepad : localNotepads){
+            MomoCloudNotepad cloud = localNotepad.toCloud();
+            String cloudId = cloud.getId();
+            if (cloudService.exists(cloudId))
+                cloudService.updateNotepad(cloud);
+            else{
+                cloudId =cloudService.createNotepad(cloud);
+                localNotepad.setCloudId(cloudId);
+                localService.updateNotepad(localNotepad);
+            }
         }
         return false;
     }
