@@ -28,9 +28,9 @@ public class MomoOpenApiAspect {
             result =(ResponseEntity<MomoResponse<?>> ) joinPoint.proceed();
             long len = System.currentTimeMillis() - start;
             checkResponse(result);
-            logger.info("方法["+signature+"]调用成功;入参:"+ Arrays.toString(args) +"耗时:"+ len +" ms;响应结果:"+result);
+            logger.debug("方法["+signature+"]调用成功;入参:"+ Arrays.toString(args) +"耗时:"+ len +" ms;响应结果:"+result);
         } catch (WebClientResponseException e){
-            logger.info("方法调用["+signature+"]失败;入参:"+ Arrays.toString(args) +"错误信息:" +e.getMessage());
+            logger.debug("方法调用["+signature+"]失败;入参:"+ Arrays.toString(args) +"错误信息:" +e.getMessage());
             throw e;
         }
         return result;

@@ -2,7 +2,9 @@ package com.wzm.aio.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wzm.aio.api.entity.MomoCloudNotepad;
+import com.wzm.aio.config.AutoMapperConfiguration;
 import com.wzm.aio.util.WordListParser;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -11,6 +13,8 @@ import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
+@AutoMapper(target = MomoCloudNotepad.class,
+        uses = AutoMapperConfiguration.StringListConverter.class)
 public class MomoLocalNotepad {
 
     private int id;

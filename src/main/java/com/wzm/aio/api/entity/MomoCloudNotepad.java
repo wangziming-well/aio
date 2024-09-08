@@ -1,16 +1,19 @@
 package com.wzm.aio.api.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wzm.aio.config.AutoMapperConfiguration;
 import com.wzm.aio.domain.MomoLocalNotepad;
-import com.wzm.aio.util.WordListParser;
+import com.wzm.aio.util.BeanUtils;
+import io.github.linpeilie.annotations.AutoMapper;
+import io.github.linpeilie.annotations.AutoMapping;
 import lombok.Data;
-import org.apache.commons.beanutils.BeanUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
+@AutoMapper(target = MomoLocalNotepad.class,
+        uses = AutoMapperConfiguration.StringListConverter.class)
 public class MomoCloudNotepad {
     public enum Type {
         FAVORITE, NOTEPAD
@@ -19,10 +22,11 @@ public class MomoCloudNotepad {
     public enum Stats {
         PUBLISHED, UNPUBLISHED, DELETE
     }
-
+    @AutoMapping(target = "id",ignore = true)
     private String id;
     private Type type;
     private Stats status = Stats.PUBLISHED;
+    @AutoMapping(target = "words")
     private String content;
     private String title;
     private String brief;
@@ -33,18 +37,10 @@ public class MomoCloudNotepad {
     @JsonProperty("updated_time")
     private OffsetDateTime updatedTime;
 
-    public MomoLocalNotepad toLocal(){
-        MomoLocalNotepad local = new MomoLocalNotepad();
 
-        try {
-            BeanUtils.copyProperties(local,this);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+    public MomoLocalNotepad toLocal(){
+        MomoLocalNotepad local = BeanUtils.convert(this, MomoLocalNotepad.class);
         local.setCloudId(this.id);
-        local.setId(0);
-        local.setWords(WordListParser.parse(this.content));
-        local.setTags(WordListParser.join(this.tags));
         return local;
     }
 

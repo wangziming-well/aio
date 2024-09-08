@@ -11,14 +11,17 @@ import com.wzm.aio.util.WordListParser;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.sql.SQLDataException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class MomoLocalService {
 
 
@@ -57,10 +60,6 @@ public class MomoLocalService {
     }
 
     public MomoLocalNotepad getNotepad(int id) {
-        return momoNotepadMapper.selectById(id);
-    }
-
-    public MomoLocalNotepad getNotepadWithWords(int id) {
         MomoLocalNotepad result = momoNotepadMapper.selectById(id);
         result.setWords(getWords(result.getId()));
         return result;
@@ -89,14 +88,12 @@ public class MomoLocalService {
      * @return 新增成功返回ture
      * @throws IndexOutOfBoundsException 当notepad的数量不能大于7时
      */
-    public boolean addNotepad(MomoLocalNotepad notepad) {
+    public void addNotepad(MomoLocalNotepad notepad) {
         checkCount();
-        boolean result = momoNotepadMapper.insertAndGetPrimaryKey(notepad);
-        if (!result)
-            return false;
+        momoNotepadMapper.insertAndGetPrimaryKey(notepad);
         List<String> words = notepad.getWords();
         if (words == null)
-            return true;
+            return;
         int notepadId = notepad.getId();
         for (String word : words) {
             Word localWord = dictionaryMapper.selectByWord(word);
@@ -107,19 +104,21 @@ public class MomoLocalService {
             int dictId = localWord.getId();
             notepadDictMapper.insert(notepadId, dictId);
         }
-        return true;
+    }
+
+    public void updateNotepad(MomoLocalNotepad localNotepad) {
+        momoNotepadMapper.update(localNotepad);
     }
 
 
     /**
      * 按照本地ID删除本地notepad，和该notepad与dict的关联关系(notepad_dictionary)
-     *
      * @param id notepad的本地ID
      * @return 删除的notepad_dictionary条目个数，如果返回-1表示没有对应的notepad
      */
     public int deleteNotepad(int id) {
-        boolean result = momoNotepadMapper.deleteById(id);
-        if (!result)
+        int count = momoNotepadMapper.deleteById(id);
+        if (count == 0)
             return -1;
         return notepadDictMapper.deleteByNotepadId(id);
     }
@@ -153,9 +152,7 @@ public class MomoLocalService {
         return addWords(WordListParser.parse(text));
     }
 
-    public void updateNotepad(MomoLocalNotepad localNotepad) {
-        momoNotepadMapper.update(localNotepad);
-    }
+
 
     @Getter
     @ToString

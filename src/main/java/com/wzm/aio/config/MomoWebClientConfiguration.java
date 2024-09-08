@@ -55,7 +55,7 @@ public class MomoWebClientConfiguration {
         @Override
         @NonNull
         public Mono<ClientResponse> filter(@NonNull ClientRequest request, @NonNull ExchangeFunction next) {
-            logger.info("发起请求:" + request.logPrefix() + "HTTP " + request.method() + " " +
+            logger.debug("发起请求:" + request.logPrefix() + "HTTP " + request.method() + " " +
                     request.url() + ", headers=" + request.headers());
             return next.exchange(request);
         }

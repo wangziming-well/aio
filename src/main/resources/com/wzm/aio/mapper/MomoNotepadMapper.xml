@@ -44,14 +44,14 @@
     <update id="update" parameterType="com.wzm.aio.domain.MomoLocalNotepad">
         update momo_notepad
          <set>
-             <if test="cloudId != null">cloud_id=#{cloudId}</if>
-             <if test="type != null">type=#{type}</if>
-             <if test="status != null">status=#{status}</if>
-             <if test="title != null">title=#{title}</if>
-             <if test="brief != null">brief=#{brief}</if>
-             <if test="tags != null">tags=#{tags}</if>
-             <if test="created_time != null">title=#{createdTime}</if>
-             <if test="updatedTime != null">updated_time=#{updatedTime}</if>
+             <if test="cloudId != null">cloud_id=#{cloudId},</if>
+             <if test="type != null">type=#{type},</if>
+             <if test="status != null">status=#{status},</if>
+             <if test="title != null">title=#{title},</if>
+             <if test="brief != null">brief=#{brief},</if>
+             <if test="tags != null">tags=#{tags},</if>
+             <if test="createdTime != null">create_time=#{createdTime},</if>
+             <if test="updatedTime != null">update_time=#{updatedTime},</if>
          </set>
         where id = #{id}
     </update>

@@ -1,12 +1,18 @@
 package com.wzm.aio.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wzm.aio.api.entity.MomoCloudNotepad;
+import com.wzm.aio.config.AutoMapperConfiguration;
+import com.wzm.aio.domain.MomoLocalNotepad;
+import io.github.linpeilie.annotations.AutoMapper;
+import io.github.linpeilie.annotations.AutoMappers;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
+@AutoMapper(target = MomoLocalNotepad.class)
 public class MomoNotepadDTO {
 
     private int id;
@@ -21,6 +27,5 @@ public class MomoNotepadDTO {
     @JsonProperty("updated_time")
     private OffsetDateTime updatedTime;
     List<String> words;
-
 
 }

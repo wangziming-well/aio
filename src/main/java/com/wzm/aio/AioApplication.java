@@ -9,6 +9,7 @@ import com.wzm.aio.mapper.NotepadDictMapper;
 import com.wzm.aio.service.MomoCloudService;
 import com.wzm.aio.service.MomoLocalService;
 import com.wzm.aio.service.MomoService;
+import com.wzm.aio.util.SpringUtils;
 import lombok.SneakyThrows;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +27,7 @@ public class AioApplication {
 
     public static void main(String[] args) {
        ConfigurableApplicationContext run = SpringApplication.run(AioApplication.class, args);
+        SpringUtils.setApplicationContext(run);
         MomoService service = run.getBean(MomoService.class);
         MomoLocalService localService = run.getBean(MomoLocalService.class);
         MomoCloudService cloudService = run.getBean(MomoCloudService.class);
@@ -34,7 +36,7 @@ public class AioApplication {
         MomoNotepadDTO momoNotepadDTO = new MomoNotepadDTO();
         momoNotepadDTO.setId(1);
         momoNotepadDTO.setTitle("ewts");
-        service.addNotepad(momoNotepadDTO);
+        service.pull();
         System.exit(0);
     }
 

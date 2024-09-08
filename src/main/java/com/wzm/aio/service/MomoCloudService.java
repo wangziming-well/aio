@@ -54,8 +54,8 @@ public class MomoCloudService {
     public List<MomoCloudNotepad> getAllNotepads() {
         ResponseEntity<MomoResponse<NotepadList>> response = momoOpenApi.getAllNotepads();
         List<MomoCloudNotepad> notepads = getData(response).getNotepads();
-        ArrayList<MomoCloudNotepad>  result = new ArrayList<>();
-        for (MomoCloudNotepad notepad : notepads){
+        ArrayList<MomoCloudNotepad> result = new ArrayList<>();
+        for (MomoCloudNotepad notepad : notepads) {
             result.add(getNotepad(notepad.getId()));
         }
         return result;
@@ -66,10 +66,10 @@ public class MomoCloudService {
         return isSuccess(response);
     }
 
-    public void deleteAllNotepad(){
+    public void deleteAllNotepad() {
         ResponseEntity<MomoResponse<NotepadList>> response = momoOpenApi.getAllNotepads();
         List<MomoCloudNotepad> notepads = getData(response).getNotepads();
-        for (MomoCloudNotepad notepad : notepads){
+        for (MomoCloudNotepad notepad : notepads) {
             deleteNotepad(notepad.getId());
         }
     }
@@ -83,45 +83,46 @@ public class MomoCloudService {
     }
 
 
-
     /**
-     *  创建一个notepad
+     * 创建一个notepad
+     *
      * @param momoCloudNotepad 要创建的notepad
      * @return 新创建的notepad的id，如果为空字符串，则表示创建失败
      */
     public String createNotepad(MomoCloudNotepad momoCloudNotepad) {
         checkRequired(momoCloudNotepad);
-        int maxCount = properties.getNotepad().getMaxCount();
-        if (getAllNotepads().size() >= maxCount)
-            throw new IndexOutOfBoundsException("云词库已经达到最大数量:" + maxCount);
+
         ResponseEntity<MomoResponse<OneNotepad>> result = momoOpenApi.createNotepad(new OneNotepad(momoCloudNotepad));
         if (!isSuccess(result))
             return "";
         return getData(result).getNotepad().getId();
     }
 
-    public String createNotepad(String title,String brief,String content){
+    public String createNotepad(String title, String brief, String content) {
         MomoCloudNotepad momoCloudNotepad = MomoCloudNotepad.builder().title(title).brief(brief).content(content).build();
         return createNotepad(momoCloudNotepad);
     }
 
+    /**
+     * 获取notepad
+     * @param id notepad的云端id
+     * @return 返回null表示云端notepad不存在
+     */
+
     public MomoCloudNotepad getNotepad(String id) {
-        ResponseEntity<MomoResponse<OneNotepad>> result = momoOpenApi.getNotepad(id);
+        ResponseEntity<MomoResponse<OneNotepad>> result;
+        try {
+            result = momoOpenApi.getNotepad(id);
+        } catch (WebClientResponseException e) {
+            if (e.getMessage().startsWith("503 Service Unavailable"))
+                return null;
+            else
+                throw e;
+        }
         if (!isSuccess(result))
             return null;
         OneNotepad data = getData(result);
         return data.getNotepad();
     }
 
-    public boolean exists(String id){
-        try{
-            getNotepad(id);
-        } catch (WebClientResponseException e){
-            if (e.getMessage().startsWith("503 Service Unavailable"))
-                return false;
-            else
-                throw e;
-        }
-        return true;
-    }
 }

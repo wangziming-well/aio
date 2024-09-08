@@ -15,11 +15,11 @@ public interface MomoNotepadMapper {
 
     MomoLocalNotepad selectByCloudId(String cloudId);
 
-    void update(MomoLocalNotepad localNotepad);
+    int update(MomoLocalNotepad localNotepad);
 
-    boolean insert(MomoLocalNotepad notepad);
+    int insert(MomoLocalNotepad notepad);
 
-    boolean insertAndGetPrimaryKey(MomoLocalNotepad notepad);
+    int insertAndGetPrimaryKey(MomoLocalNotepad notepad);
 
     @Update("truncate table momo_notepad")
     void truncateTable();
@@ -27,6 +27,6 @@ public interface MomoNotepadMapper {
     @Select("select count(*) from momo_notepad")
     int count();
     @Delete("delete from momo_notepad where id = #{id}")
-    boolean deleteById(int id);
+    int deleteById(int id);
 
 }
