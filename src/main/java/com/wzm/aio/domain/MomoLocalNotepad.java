@@ -3,20 +3,25 @@ package com.wzm.aio.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wzm.aio.api.entity.MomoCloudNotepad;
 import com.wzm.aio.config.AutoMapperConfiguration;
-import com.wzm.aio.util.WordListParser;
+import com.wzm.aio.dto.MomoNotepadDTO;
+import com.wzm.aio.util.BeanUtils;
 import io.github.linpeilie.annotations.AutoMapper;
+import io.github.linpeilie.annotations.AutoMappers;
+import io.github.linpeilie.annotations.AutoMapping;
 import lombok.Data;
-import org.apache.commons.beanutils.BeanUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
 @Data
-@AutoMapper(target = MomoCloudNotepad.class,
-        uses = AutoMapperConfiguration.StringListConverter.class)
-public class MomoLocalNotepad {
+@AutoMappers({
+        @AutoMapper(target = MomoCloudNotepad.class,
+                uses = AutoMapperConfiguration.StringListConverter.class),
+        @AutoMapper(target = MomoNotepadDTO.class)
+})
 
+public class MomoLocalNotepad {
+    @AutoMapping(target = "id",ignore = true)
     private int id;
     private String cloudId;
     private String type;
@@ -28,21 +33,17 @@ public class MomoLocalNotepad {
     private OffsetDateTime createdTime;
     @JsonProperty("updated_time")
     private OffsetDateTime updatedTime;
+    @AutoMapping(target = "content")
     List<String> words;
 
-    public MomoCloudNotepad toCloud() {
-        MomoCloudNotepad cloud = new MomoCloudNotepad();
 
-        try {
-            BeanUtils.copyProperties(cloud,this);
-        } catch (IllegalAccessException | InvocationTargetException |IllegalArgumentException e) {
+    public MomoCloudNotepad toCloud(){
+        MomoCloudNotepad convert = BeanUtils.convert(this, MomoCloudNotepad.class);
+        convert.setId(this.cloudId);
+        return convert;
+    }
 
-        }
-        cloud.setId(this.cloudId);
-        cloud.setContent(WordListParser.join(this.words));
-        cloud.setTags(WordListParser.parse(this.tags));
-        cloud.setType(MomoCloudNotepad.Type.valueOf(this.type));
-        cloud.setStatus(MomoCloudNotepad.Stats.valueOf(this.status));
-        return cloud;
+    public MomoNotepadDTO toDTO(){
+        return BeanUtils.convert(this,MomoNotepadDTO.class);
     }
 }

@@ -98,7 +98,6 @@ public class MomoService {
 
         }
         logger.info("本地notepad同步云端完成");
-
     }
 
     private boolean isDiffer(MomoCloudNotepad cloud, MomoLocalNotepad local) {
@@ -130,7 +129,7 @@ public class MomoService {
     }
 
     public void addNotepad(MomoNotepadDTO notepadDTO) {
-        MomoLocalNotepad localNotepad = BeanUtils.transfer(notepadDTO, MomoLocalNotepad.class);
+        MomoLocalNotepad localNotepad = notepadDTO.toLocal();
         MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
         String cloudId = cloudService.createNotepad(cloudNotepad);
         localNotepad.setCloudId(cloudId);
@@ -138,7 +137,7 @@ public class MomoService {
     }
 
     public void updateNotepad(MomoNotepadDTO notepadDTO) {
-        MomoLocalNotepad localNotepad = BeanUtils.transfer(notepadDTO, MomoLocalNotepad.class);
+        MomoLocalNotepad localNotepad = notepadDTO.toLocal();
         MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
         localService.updateNotepad(localNotepad);
         cloudService.updateNotepad(cloudNotepad);
@@ -154,7 +153,7 @@ public class MomoService {
 
     public MomoNotepadDTO getNotepad(int localId) {
         MomoLocalNotepad notepad = localService.getNotepad(localId);
-        return BeanUtils.transfer(notepad, MomoNotepadDTO.class);
+        return notepad.toDTO();
     }
 
 

@@ -36,7 +36,7 @@ public class AioApplication {
         MomoNotepadDTO momoNotepadDTO = new MomoNotepadDTO();
         momoNotepadDTO.setId(1);
         momoNotepadDTO.setTitle("ewts");
-        service.pull();
+        service.push();
         System.exit(0);
     }
 
