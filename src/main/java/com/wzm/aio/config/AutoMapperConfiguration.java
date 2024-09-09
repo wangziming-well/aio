@@ -1,9 +1,11 @@
 package com.wzm.aio.config;
 
-import com.wzm.aio.util.WordListParser;
+import com.wzm.aio.util.TextParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @Configuration
@@ -11,12 +13,14 @@ public class AutoMapperConfiguration {
 
     public static class StringListConverter{
 
+        private static final String DELIMITER = " ";
+
         public List<String> convertToList(String str){
-            return WordListParser.parse(str);
+            return List.of(str.split(DELIMITER));
         }
 
         public String convertToString(List<String> lists){
-            return WordListParser.join(lists);
+            return String.join(DELIMITER,lists);
         }
 
     }

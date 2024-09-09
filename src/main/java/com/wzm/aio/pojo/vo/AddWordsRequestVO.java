@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class AddWordsRequestVO {
 
-    private String content;
+    private String text;
 }

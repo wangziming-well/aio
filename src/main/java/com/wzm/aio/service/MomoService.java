@@ -5,7 +5,7 @@ import com.wzm.aio.pojo.model.MomoCloudNotepad;
 import com.wzm.aio.pojo.model.MomoLocalNotepad;
 import com.wzm.aio.pojo.dto.MomoNotepadDTO;
 import com.wzm.aio.util.ThreadUtils;
-import com.wzm.aio.util.WordListParser;
+import com.wzm.aio.util.TextParser;
 import lombok.Getter;
 import lombok.ToString;
 import org.apache.commons.logging.Log;
@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -115,13 +116,12 @@ public class MomoService {
 
     //内容不一致则返回true
     private boolean isDiffer(String text, List<String> words) {
-        List<String> parse = WordListParser.parse(text);
-        if (parse.size() != words.size())
+        List<String> words1 = Arrays.stream(text.split(" ")).sorted().toList();
+        if (words1.size() != words.size())
             return true;
         words.sort(String::compareTo);
-        parse.sort(String::compareTo);
         for (int i = 0; i < words.size(); i++) {
-            if (!Objects.equals(parse.get(i), words.get(i)))
+            if (!Objects.equals(words1.get(i), words.get(i)))
                 return true;
         }
         return false;

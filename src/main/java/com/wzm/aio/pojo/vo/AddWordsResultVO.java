@@ -1,18 +1,25 @@
 package com.wzm.aio.pojo.vo;
 
-import lombok.Builder;
-import lombok.Data;
+import com.wzm.aio.util.TextParser;
+import lombok.*;
 
 import java.util.List;
 
 @Data
-@Builder
+@AllArgsConstructor
 public class AddWordsResultVO {
+    @Getter
+    @Setter
+    public static class ResultEntry{
 
-    private List<String> parsedWords;
+        public ResultEntry(String word){
+            this.word = word;
+        }
 
-    private List<String> newWords;
+        private String word;
+        private boolean newWords =false;
+    }
 
-    private List<String> existedWords;
+    private List<ResultEntry> parsedWords;
 
 }
