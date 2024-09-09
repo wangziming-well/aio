@@ -1,21 +1,22 @@
 package com.wzm.aio.service;
 
-import com.wzm.aio.domain.MomoLocalNotepad;
-import com.wzm.aio.domain.NotepadDictPair;
-import com.wzm.aio.domain.Word;
+import com.wzm.aio.pojo.model.MomoLocalNotepad;
+import com.wzm.aio.pojo.model.NotepadDictPair;
+import com.wzm.aio.pojo.model.Word;
 import com.wzm.aio.mapper.DictionaryMapper;
 import com.wzm.aio.mapper.MomoNotepadMapper;
 import com.wzm.aio.mapper.NotepadDictMapper;
 import com.wzm.aio.properties.MomoProperties;
-import com.wzm.aio.util.WordListParser;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.ObjectUtils;
 
-import java.sql.SQLDataException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class MomoLocalService {
                         dictionaryMapper.selectById(pair.getDictId()).getWord())
                 .collect(Collectors.toList());
     }
-
+    //获取本地notepad，包括wordList
     public MomoLocalNotepad getNotepad(int id) {
         MomoLocalNotepad result = momoNotepadMapper.selectById(id);
         result.setWords(getWords(result.getId()));
@@ -105,9 +106,14 @@ public class MomoLocalService {
             notepadDictMapper.insert(notepadId, dictId);
         }
     }
-
+    //更新本地notepad，没有更新notepad对应的wordList
     public void updateNotepad(MomoLocalNotepad localNotepad) {
-        momoNotepadMapper.update(localNotepad);
+        if (ObjectUtils.isEmpty(localNotepad.getId()))
+            momoNotepadMapper.updateByCloudId(localNotepad);
+        else if (ObjectUtils.isEmpty(localNotepad.getCloudId()))
+            momoNotepadMapper.updateByLocalId(localNotepad);
+        else
+            throw new RuntimeException("id和cloudId都为空");
     }
 
 
@@ -130,63 +136,53 @@ public class MomoLocalService {
         return deleteNotepad(notepad.getId());
     }
 
+    /**
+     * 向dictionary添加一个word，
+     * @param word 要添加的Word，方法完成后，该Word对象的id将被赋值，为当前word在表中的id
+     * @return 如果word已经存在，返回false，否则返回true。
+     */
 
-    public EndWordResult addWords(String... words) {
-        return addWords(List.of(words));
-    }
-
-    public EndWordResult addWords(List<String> words) {
-        ArrayList<String> success = new ArrayList<>();
-        ArrayList<String> fail = new ArrayList<>();
-        for (String word : words) {
-            boolean result = dictionaryMapper.insert(word);
-            if (result)
-                success.add(word);
-            else
-                fail.add(word);
+    public int addGlobalWord(String  word){
+        Assert.hasText(word, "Word.word不能为空");
+        Word exist = dictionaryMapper.selectByWord(word);
+        if (exist != null){//如果要添加的单词已经存在
+            return exist.getId();
         }
-        return new EndWordResult(words, success, fail);
+        Word toInsert = new Word(word);
+        dictionaryMapper.insertAndGetPrimaryKey(toInsert);
+        return toInsert.getId();
     }
 
-    public EndWordResult addWords(String text) {
-        return addWords(WordListParser.parse(text));
+    public AddWordsResult addWordsToNotepad(int localId,List<String> words){
+        List<NotepadDictPair> notepadDictPairs = notepadDictMapper.selectByNotepadId(localId);
+        int[] currWordIds = notepadDictPairs.stream().mapToInt(NotepadDictPair::getDictId).toArray();
+        ArrayList<String> existedWords = new ArrayList<>();
+        ArrayList<String> newWords = new ArrayList<>();
+        for (String word: words){
+            int wordId = addGlobalWord(word);
+            int index = Arrays.binarySearch(currWordIds, wordId);
+            if (index < 0){ //word不在notepad中，尝试添加关联关系
+                notepadDictMapper.insert(localId,wordId);
+                newWords.add(word);
+            } else { //word在notepad中
+                existedWords.add(word);
+            }
+        }
+        return new AddWordsResult(existedWords,newWords);
+
     }
-
-
 
     @Getter
     @ToString
-    public static class EndWordResult {
-        private final List<String> allWords;
-        private final List<String> successWords;
-        private final List<String> failWords;
+    public static class AddWordsResult {
 
-        private EndWordResult(List<String> allWords, List<String> successWords, List<String> failWords) {
-            this.successWords = Collections.unmodifiableList(successWords);
-            this.failWords = Collections.unmodifiableList(failWords);
-            this.allWords = Collections.unmodifiableList(allWords);
+        private final List<String> existedWords;
+        private final List<String> newWords;
+
+        public AddWordsResult(List<String> existedWords, List<String> newWords) {
+            this.existedWords = Collections.unmodifiableList(existedWords);
+            this.newWords = Collections.unmodifiableList(newWords);
         }
-
-        public int total() {
-            return this.allWords.size();
-        }
-
-        public int successCount() {
-            return this.successWords.size();
-        }
-
-        public int failCount() {
-            return this.failWords.size();
-        }
-
-        public boolean allSuccess() {
-            return successCount() == total();
-        }
-
-        public boolean hasFailed() {
-            return !allSuccess();
-        }
-
     }
 
 }

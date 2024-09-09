@@ -21,7 +21,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wzm.aio.mapper.MomoNotepadMapper">
 
-    <resultMap id="NotepadMap" type="com.wzm.aio.domain.MomoLocalNotepad">
+    <resultMap id="NotepadMap" type="com.wzm.aio.pojo.model.MomoLocalNotepad">
         <result property="cloudId" column="cloud_id"/>
         <result property="createdTime" column="create_time"/>
         <result property="updatedTime" column="update_time"/>
@@ -41,7 +41,7 @@
 
     </select>
 
-    <update id="update" parameterType="com.wzm.aio.domain.MomoLocalNotepad">
+    <update id="updateByLocalId" parameterType="com.wzm.aio.pojo.model.MomoLocalNotepad">
         update momo_notepad
          <set>
              <if test="cloudId != null">cloud_id=#{cloudId},</if>
@@ -55,12 +55,25 @@
          </set>
         where id = #{id}
     </update>
+    <update id="updateByCloudId">
+        update momo_notepad
+        <set>
+            <if test="type != null">type=#{type},</if>
+            <if test="status != null">status=#{status},</if>
+            <if test="title != null">title=#{title},</if>
+            <if test="brief != null">brief=#{brief},</if>
+            <if test="tags != null">tags=#{tags},</if>
+            <if test="createdTime != null">create_time=#{createdTime},</if>
+            <if test="updatedTime != null">update_time=#{updatedTime},</if>
+        </set>
+        where cloud_id = #{cloudId}
+    </update>
 
-    <insert id="insert" parameterType="com.wzm.aio.domain.MomoLocalNotepad">
+    <insert id="insert" parameterType="com.wzm.aio.pojo.model.MomoLocalNotepad">
         insert into momo_notepad (cloud_id, title, brief, tags, type, status, create_time, update_time)
         VALUES (#{cloudId},#{title},#{brief},#{tags},#{type},#{status},#{createdTime},#{updatedTime} )
     </insert>
-    <insert id="insertAndGetPrimaryKey" useGeneratedKeys="true" keyProperty="id" parameterType="com.wzm.aio.domain.MomoLocalNotepad">
+    <insert id="insertAndGetPrimaryKey" useGeneratedKeys="true" keyProperty="id" parameterType="com.wzm.aio.pojo.model.MomoLocalNotepad">
         insert into momo_notepad (cloud_id, title, brief, tags, type, status, create_time, update_time)
         VALUES (#{cloudId},#{title},#{brief},#{tags},#{type},#{status},#{createdTime},#{updatedTime} )
     </insert>

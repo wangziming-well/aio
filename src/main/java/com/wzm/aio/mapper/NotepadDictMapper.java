@@ -1,9 +1,8 @@
 package com.wzm.aio.mapper;
 
-import com.wzm.aio.domain.NotepadDictPair;
+import com.wzm.aio.pojo.model.NotepadDictPair;
 import org.apache.ibatis.annotations.*;
 
-import java.lang.annotation.*;
 import java.util.List;
 
 @Mapper

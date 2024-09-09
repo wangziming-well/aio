@@ -2,7 +2,7 @@ package com.wzm.aio.service;
 
 import com.wzm.aio.api.MomoOpenApi;
 import com.wzm.aio.api.MomoResponse;
-import com.wzm.aio.api.entity.MomoCloudNotepad;
+import com.wzm.aio.pojo.model.MomoCloudNotepad;
 import com.wzm.aio.api.entity.NotepadList;
 import com.wzm.aio.api.entity.OneNotepad;
 import com.wzm.aio.properties.MomoProperties;
@@ -74,12 +74,14 @@ public class MomoCloudService {
         }
     }
 
-    public boolean updateNotepad(MomoCloudNotepad momoCloudNotepad) {
+    public MomoCloudNotepad updateNotepad(MomoCloudNotepad momoCloudNotepad) {
         checkRequired(momoCloudNotepad);
         String id = momoCloudNotepad.getId();
         Assert.notNull(id, "id不能为空");
         ResponseEntity<MomoResponse<OneNotepad>> result = momoOpenApi.updateNotepad(id, new OneNotepad(momoCloudNotepad));
-        return isSuccess(result);
+        if (!isSuccess(result))
+            return null;
+        return getData(result).getNotepad();
     }
 
 
@@ -89,16 +91,16 @@ public class MomoCloudService {
      * @param momoCloudNotepad 要创建的notepad
      * @return 新创建的notepad的id，如果为空字符串，则表示创建失败
      */
-    public String createNotepad(MomoCloudNotepad momoCloudNotepad) {
+    public MomoCloudNotepad createNotepad(MomoCloudNotepad momoCloudNotepad) {
         checkRequired(momoCloudNotepad);
 
         ResponseEntity<MomoResponse<OneNotepad>> result = momoOpenApi.createNotepad(new OneNotepad(momoCloudNotepad));
         if (!isSuccess(result))
-            return "";
-        return getData(result).getNotepad().getId();
+            return null;
+        return getData(result).getNotepad();
     }
 
-    public String createNotepad(String title, String brief, String content) {
+    public MomoCloudNotepad createNotepad(String title, String brief, String content) {
         MomoCloudNotepad momoCloudNotepad = MomoCloudNotepad.builder().title(title).brief(brief).content(content).build();
         return createNotepad(momoCloudNotepad);
     }

@@ -1,16 +1,19 @@
 package com.wzm.aio.service;
 
 
-import com.wzm.aio.api.entity.MomoCloudNotepad;
-import com.wzm.aio.domain.MomoLocalNotepad;
-import com.wzm.aio.dto.MomoNotepadDTO;
-import com.wzm.aio.util.BeanUtils;
+import com.wzm.aio.pojo.model.MomoCloudNotepad;
+import com.wzm.aio.pojo.model.MomoLocalNotepad;
+import com.wzm.aio.pojo.dto.MomoNotepadDTO;
+import com.wzm.aio.util.ThreadUtils;
 import com.wzm.aio.util.WordListParser;
+import lombok.Getter;
+import lombok.ToString;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -38,7 +41,7 @@ public class MomoService {
         for (MomoCloudNotepad cloudNotepad : cloudNotepads) {
             MomoLocalNotepad local = cloudNotepad.toLocal();
             localService.addNotepad(local);
-            logger.info("添加云端notepad["+ cloudNotepad.getId()+"]到本地，本地ID:" + local.getId());
+            logger.info("添加云端notepad[" + cloudNotepad.getId() + "]到本地，本地ID:" + local.getId());
         }
         logger.info("同步云端词库到本地结束");
 
@@ -60,13 +63,9 @@ public class MomoService {
                 }
             }
             if (shouldDelete) {
-                logger.info("云端notepad[" + cloudId + "]在本地不存在，将被删除" );
+                logger.info("云端notepad[" + cloudId + "]在本地不存在，将被删除");
                 cloudService.deleteNotepad(cloudId);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                ThreadUtils.sleep(1000);
             }
         }
 
@@ -91,7 +90,7 @@ public class MomoService {
             if (!cloudExist) {
                 logger.info("当前云端不存在notepad[" + cloudId + "]将新建该notepad到云端");
 
-                cloudId = cloudService.createNotepad(localNotepad.toCloud());
+                cloudId = cloudService.createNotepad(localNotepad.toCloud()).getId();
                 localNotepad.setCloudId(cloudId);
                 localService.updateNotepad(localNotepad);
             }
@@ -129,26 +128,50 @@ public class MomoService {
     }
 
     public void addNotepad(MomoNotepadDTO notepadDTO) {
-        MomoLocalNotepad localNotepad = notepadDTO.toLocal();
-        MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
-        String cloudId = cloudService.createNotepad(cloudNotepad);
-        localNotepad.setCloudId(cloudId);
+        MomoCloudNotepad cloudNotepad = notepadDTO.toCloud();
+        cloudNotepad = cloudService.createNotepad(cloudNotepad);
+        MomoLocalNotepad localNotepad = cloudNotepad.toLocal();
         localService.addNotepad(localNotepad);
+    }
+
+    private void checkLocalId(MomoNotepadDTO notepadDTO) {
+
     }
 
     public void updateNotepad(MomoNotepadDTO notepadDTO) {
         MomoLocalNotepad localNotepad = notepadDTO.toLocal();
         MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
-        localService.updateNotepad(localNotepad);
-        cloudService.updateNotepad(cloudNotepad);
+        MomoCloudNotepad updatedCloudNotepad = cloudService.updateNotepad(cloudNotepad);
+        localService.updateNotepad(updatedCloudNotepad.toLocal());
+    }
+    //向notepad中添加单词，会同步到云端
+    public AddWordsResult addWordsToNotepad(int localId, List<String> words) {
+        MomoLocalService.AddWordsResult result = localService.addWordsToNotepad(localId, words);
+        MomoLocalNotepad notepad = localService.getNotepad(localId);
+        cloudService.updateNotepad(notepad.toCloud());
+        return new AddWordsResult(result.getExistedWords(), result.getNewWords());
+    }
+
+
+    @Getter
+    @ToString
+    public static class AddWordsResult {
+
+        private final List<String> existedWords;
+        private final List<String> newWords;
+
+        public AddWordsResult(List<String> existedWords, List<String> newWords) {
+            this.existedWords = Collections.unmodifiableList(existedWords);
+            this.newWords = Collections.unmodifiableList(newWords);
+        }
     }
 
     @Transactional
     public void deleteNotepad(int localId) {
         MomoLocalNotepad notepad = localService.getNotepad(localId);
         String cloudId = notepad.getCloudId();
-        localService.deleteNotepad(localId);
         cloudService.deleteNotepad(cloudId);
+        localService.deleteNotepad(localId);
     }
 
     public MomoNotepadDTO getNotepad(int localId) {

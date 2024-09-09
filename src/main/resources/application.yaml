@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: aio
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/aio
+    username: root
+    password: 123456
+
+momo:
+  token: 2941df5f80f92f9c3a5256d5762b3c30a0eb82256f269e82c1ff15a203b55096
+  notepad:
+    local-id: 1
+    max-count: 7
+
+logging:
+  level:
+    root: INFO
+    com.wzm.aio.api: DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger.html
+
+

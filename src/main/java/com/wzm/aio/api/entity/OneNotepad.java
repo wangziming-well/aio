@@ -1,5 +1,6 @@
 package com.wzm.aio.api.entity;
 
+import com.wzm.aio.pojo.model.MomoCloudNotepad;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,7 @@
-package com.wzm.aio.api.entity;
+package com.wzm.aio.pojo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wzm.aio.config.AutoMapperConfiguration;
-import com.wzm.aio.domain.MomoLocalNotepad;
 import com.wzm.aio.util.BeanUtils;
 import io.github.linpeilie.annotations.AutoMapper;
 import io.github.linpeilie.annotations.AutoMapping;

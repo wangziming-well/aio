@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<!--<script>
+	function fun() {
+		let words = document.querySelector("#words").value;
+		let resultElement = document.querySelector("#result");
+		fetch("http://localhost:8080/momo",{
+			method: "post",
+			body: JSON.stringify({words: words}) ,
+			headers: new Headers({"Content-Type":"application/json"})
+		}).then(  response =>response.text())
+			.then(text => resultElement.textContent =  text)
+	}
+
+</script>-->
+<form>
+  <label for="words"></label>
+  <textarea id="words"></textarea>
+  <button>提交</button>
+
+</form>
+<div id="result"></div>
+
+
+</body>
+
+</html>

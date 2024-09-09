@@ -1,6 +1,6 @@
 package com.wzm.aio.mapper;
 
-import com.wzm.aio.domain.Word;
+import com.wzm.aio.pojo.model.Word;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public interface DictionaryMapper {
 
     @Insert("insert into dictionary (word) values (#{word})")
     @Options(useGeneratedKeys = true,keyProperty = "id")
-    boolean insertAndGetPrimaryKey(Word word);
+    int insertAndGetPrimaryKey(Word word);
     @Delete("delete from dictionary where word = #{word}")
     boolean deleteByWord(String word);
 

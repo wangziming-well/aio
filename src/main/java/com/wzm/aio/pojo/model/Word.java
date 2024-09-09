@@ -1,4 +1,4 @@
-package com.wzm.aio.domain;
+package com.wzm.aio.pojo.model;
 
 
 import lombok.Data;

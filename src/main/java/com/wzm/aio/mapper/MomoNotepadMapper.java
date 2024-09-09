@@ -1,6 +1,6 @@
 package com.wzm.aio.mapper;
 
-import com.wzm.aio.domain.MomoLocalNotepad;
+import com.wzm.aio.pojo.model.MomoLocalNotepad;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -15,7 +15,9 @@ public interface MomoNotepadMapper {
 
     MomoLocalNotepad selectByCloudId(String cloudId);
 
-    int update(MomoLocalNotepad localNotepad);
+    int updateByLocalId(MomoLocalNotepad localNotepad);
+
+    int updateByCloudId(MomoLocalNotepad localNotepad);
 
     int insert(MomoLocalNotepad notepad);
 
