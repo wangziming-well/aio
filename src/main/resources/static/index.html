@@ -5,26 +5,38 @@
   <title>Title</title>
 </head>
 <body>
-<!--<script>
+<script>
 	function fun() {
 		let words = document.querySelector("#words").value;
-		let resultElement = document.querySelector("#result");
 		fetch("http://localhost:8080/momo",{
 			method: "post",
-			body: JSON.stringify({words: words}) ,
+			body: JSON.stringify({content: words}) ,
 			headers: new Headers({"Content-Type":"application/json"})
-		}).then(  response =>response.text())
-			.then(text => resultElement.textContent =  text)
+		}).then( response =>response.json())
+                .then(result => {
+                  document.querySelector("#parsed").textContent =  result.body.parsedWords;
+                  document.querySelector("#new").textContent =  result.body.newWords;
+                  document.querySelector("#existed").textContent =  result.body.existedWords;
+
+                })
 	}
 
-</script>-->
-<form>
-  <label for="words"></label>
-  <textarea id="words"></textarea>
-  <button>提交</button>
+</script>
+<div style="text-align: center;">
+  <form>
+    <label for="words"></label>
+    <textarea id="words" style="width: 400px ; height: 300px"></textarea>
 
-</form>
-<div id="result"></div>
+  </form>
+  <button onclick="fun()">提交</button>
+  <div id="result">
+    parsed:<span id="parsed"></span> <br/>
+    new:<span id="new"></span> <br />
+    existed:<span id="existed"></span> <br />
+  </div>
+
+</div>
+
 
 
 </body>

@@ -25,16 +25,23 @@ public class MomoController {
         this.properties = properties;
     }
 
-    @PostMapping(consumes = MediaType.ALL_VALUE)
-    public Response<AddWordsResultVO> addWords(@RequestParam String words){
-        AddWordsResultVO result = new AddWordsResultVO();
-        List<String> parsed = WordListParser.parse(words);
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Response<AddWordsResultVO> addWords(@RequestBody AddWordsRequestVO words){
+        System.out.println("收到请求，words = " + words);
+        List<String> parsed = WordListParser.parse(words.getContent());
         int localId = properties.getNotepad().getLocalId();
         MomoService.AddWordsResult addWordsResult = momoService.addWordsToNotepad(localId, parsed);
-        result.setParsedWords(parsed);
-        result.setNewWords(addWordsResult.getNewWords());
-        result.setExistedWords(addWordsResult.getExistedWords());
+
+        AddWordsResultVO result = AddWordsResultVO.builder().parsedWords(parsed)
+                .newWords(addWordsResult.getNewWords())
+                .existedWords(addWordsResult.getExistedWords()).build();
         return Response.ok(result);
+    }
+
+    @GetMapping("/pull")
+    public Response<Void> pull(){
+        momoService.pull();
+        return Response.ok();
     }
 
 }
