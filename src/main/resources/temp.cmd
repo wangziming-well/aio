@@ -1,5 +1,6 @@
 @echo off
-chcp 65001 >nul
-set /p user_input=è¯·è¾“å…¥ä½ çš„åå­—: 
-echo ä½ å¥½, %user_input%!
+set /p user_input=Ãû×Ö:
+echo ÄãºÃ, %user_input%!
+set /p user_input=ÄêÁä:
+echo ÄãºÃ, %user_input%
 pause

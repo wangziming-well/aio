@@ -122,11 +122,6 @@
         </dependency>
         <!--shell交互支持 -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-exec</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.cverges</groupId>
             <artifactId>expect4j</artifactId>
             <version>1.9</version>
