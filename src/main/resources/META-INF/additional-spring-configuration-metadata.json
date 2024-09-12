@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "docusaurus.project.static-path",
+      "type": "java.lang.String",
+      "description": "Description for docusaurus.project.static-path."
+  }
+] }

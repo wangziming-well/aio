@@ -1,11 +1,32 @@
+
+docusaurus:
+  work-directory: D:/AIO #工作位置
+  static-location: D:/AIO/static #docusaurus静态资源映射的位置
+  note-repo-url: https://gitee.com/wangziming707/note.git
+
+  project:
+    name: personal-note-website
+    static-path: /note #在静态资源映射中的相对地址
+    docusaurus-config-file-name: docusaurus.config.js
+    sidebars-config-file-name: sidebars.js
+  note-picture:
+    repo-url: https://gitee.com/wangziming707/note-pic.git
+    static-path: /image #在静态资源映射中的相对地址
+    img-location: /img  #图片在仓库中的位置
 spring:
   application:
     name: aio
-
   datasource:
     url: jdbc:mysql://localhost:3306/aio
     username: root
     password: 123456
+  web:
+    resources:
+      staticLocations:
+        -classpath:/static/
+        -filepath:${docusaurus.static-location}
+  mvc:
+    static-path-pattern: /**
 
 momo:
   token: 2941df5f80f92f9c3a5256d5762b3c30a0eb82256f269e82c1ff15a203b55096
@@ -17,6 +38,7 @@ logging:
   level:
     root: INFO
     com.wzm.aio.api: DEBUG
+    expect4j: OFF
 
 springdoc:
   swagger-ui:
