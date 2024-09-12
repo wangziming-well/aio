@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -27,10 +26,14 @@ public class DocusaurusService {
 
     private final String projectContext;
 
-    public DocusaurusService(DocusaurusProperties properties) {
+
+    private final MarkdownInterceptor interceptor;
+
+    public DocusaurusService(DocusaurusProperties properties, MarkdownInterceptor interceptor) {
         this.properties = properties;
         this.project = properties.getProject();
         this.projectContext = properties.getWorkDirectory() + File.separator + project.getName();
+        this.interceptor = interceptor;
         initDirectory();
     }
 
@@ -100,17 +103,19 @@ public class DocusaurusService {
         String noteRepoUrl = properties.getNoteRepoUrl();
         String workDirectory = properties.getWorkDirectory();
         gitPull(noteRepoUrl, workDirectory);
-        //TODO 处理适配note中md文件
-
         //将note移动到Docusaurus项目中
         String repoName = analysisRepoName(noteRepoUrl);
 
         Path source = Path.of(workDirectory, repoName);
         Path target = Path.of(projectContext, "/docs");
-
-        FileUtils.copyDir(source, target);
-
+        //先删除target中的所有内容
+        FileUtils.deleteDir(target);
+        FileUtils.copyDir(source, target, ".git");
+        //处理note中md文件
+        interceptor.intercept(target);
     }
+
+
 
     public void loadNotePicture() {
         //从远程仓库拉取

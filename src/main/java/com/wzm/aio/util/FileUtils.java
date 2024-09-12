@@ -2,6 +2,7 @@ package com.wzm.aio.util;
 
 import org.springframework.util.Assert;
 import org.springframework.util.FileSystemUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
 
 public class FileUtils {
 
@@ -57,6 +59,14 @@ public class FileUtils {
      */
 
     public static void copyDir(File source, File target) {
+        copyDir(source,target,null);
+    }
+
+    public static void copyDir(Path source,Path target){
+        copyDir(source.toFile(),target.toFile(),null);
+    }
+
+    public static void copyDir(File source, File target,String ignoreDirName){
         if (!source.isDirectory()) {
             throw new RuntimeException("source不是文件夹");
         }
@@ -70,6 +80,8 @@ public class FileUtils {
             File sourceFile = new File(source, sourceFilename);
             File targetFile = new File(target, sourceFilename);
             if (sourceFile.isDirectory()) {
+                if (StringUtils.hasText(ignoreDirName) && Objects.equals(ignoreDirName,sourceFile.getName()))
+                    continue; // 如果文件夹名是要忽略的，跳过本次循环
                 copyDir(sourceFile, targetFile);
             } else {
                 copy(sourceFile,targetFile);
@@ -77,15 +89,42 @@ public class FileUtils {
         }
     }
 
-    public static void copyDir(Path source,Path target){
-        copyDir(source.toFile(),target.toFile());
+    public static void copyDir(Path source,Path target,String ignoreDirName){
+        copyDir(source.toFile(),target.toFile(),ignoreDirName);
     }
 
+    /**
+     * 删除目录，包括其中的子文件夹和文件
+     * @param directory
+     */
+    public static void deleteDir(Path directory){
+        Assert.notNull(directory,"directory不能为空");
+        File file = directory.toFile();
+        if (!file.exists())
+            throw new RuntimeException("directory不存在");
+        if (file.isFile())
+            throw new RuntimeException("directory不是文件夹");
+        File[] files = file.listFiles();
+        for (File childFile : files){
+            if (childFile.isFile()){
+                try {
+                    Files.delete(childFile.toPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                deleteDir(childFile.toPath());
+            }
+
+        }
+
+
+    }
+
+
     public static void main(String[] args) throws IOException {
-        File file = new File("D:\\Data\\Learning\\note");
-        File target = new File("D:\\AIO\\note");
-        FileSystemUtils.copyRecursively(file,target);
-        //copyDir(file, target);
+        Path path = Path.of("D:\\AIO\\personal-note-website\\docs");
+        deleteDir(path);
     }
 
 }
