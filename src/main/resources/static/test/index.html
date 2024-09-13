@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<script>
+	function fun() {
+		let text = document.querySelector("#text").value;
+		fetch("http://localhost:8080/momo", {
+			method: "post",
+			body: JSON.stringify({text: text}),
+			headers: new Headers({"Content-Type": "application/json"})
+		}).then(response => response.json())
+			.then(result => {
+				let resultTable = document.querySelector("#result");
+				let rows = resultTable.getElementsByTagName("tr");
+				while( rows.length > 0) {
+					resultTable.deleteRow(0);
+				}
+				let resultList = result.body.parsedWords;
+				for (const parsedWord of resultList) {
+					let wordElement = document.createElement('td');
+					let isNewElement = document.createElement('td');
+					wordElement.innerText = parsedWord.word;
+					isNewElement.innerText = parsedWord.newWords;
+					if (parsedWord.newWords) {
+						isNewElement.setAttribute("style", "background-color: green");
+					} else {
+						isNewElement.setAttribute("style", "background-color: red");
+					}
+					let tr = document.createElement('tr');
+					tr.appendChild(wordElement);
+					tr.append(isNewElement)
+					document.querySelector("#result").appendChild(tr);
+				}
+			})
+	}
+
+</script>
+<div style="text-align: center;">
+  <form>
+    <label for="text"></label>
+    <textarea id="text" style="width: 400px ; height: 300px"></textarea>
+
+  </form>
+  <button onclick="fun()">提交</button>
+  <table id="result">
+    <tr>
+      <th style=>单词名称</th>
+      <th>是否添加成功</th>
+    </tr>
+  </table>
+
+</div>
+
+
+</body>
+
+</html>

@@ -56,7 +56,6 @@ public class Shell {
     public static void exec(Consumer<String> outputConsumer, List<MatchEntry> matches, String directory, String command) {
         Assert.notNull(matches, "matches不能为空");
         List<String> strings = perProcess(command);
-        outputConsumer.accept(String.join(" ",strings));
         ProcessBuilder pb = new ProcessBuilder(strings);
         pb.directory(new File(directory));
         pb.redirectErrorStream(true);
@@ -65,31 +64,6 @@ public class Shell {
             try (OutputStream outputStream = start.getOutputStream();
                  InputStream inputStream = start.getInputStream()) {
                 dealInteractive(inputStream, outputStream, matches, outputConsumer);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("执行shell脚本失败", e);
-        }
-    }
-
-    public static void main(String[] args) {
-        String command = "git clone https://gitee.com/wangziming707/note-pic.git";
-        String dir = "D:\\Data\\Temporary";
-        testOutput(dir, command);
-    }
-
-    public static void testOutput(String directory, String command) {
-        ProcessBuilder pb = new ProcessBuilder(perProcess(command));
-        pb.directory(new File(directory));
-        pb.redirectErrorStream(true);
-        try {
-            Process process = pb.start();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), charset()))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         } catch (IOException e) {
             throw new RuntimeException("执行shell脚本失败", e);
@@ -223,21 +197,20 @@ public class Shell {
         public void reset() {
             try {
                 is.reset();
-            } catch (IOException ioe) {
+            } catch (IOException ignored) {
             }
         }
 
         public void close() {
             try {
                 is.close();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             try {
                 os.close();
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
     }
-
 
 }

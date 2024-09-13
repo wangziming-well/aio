@@ -6,8 +6,13 @@ docusaurus:
   project:
     name: personal-note-website
     static-path: /note #在静态资源映射中的相对地址
-    docusaurus-config-file-name: docusaurus.config.js
-    sidebars-config-file-name: sidebars.js
+    docusaurus-config-path: classpath:docusaurus-config/docusaurus.config.js
+    sidebars-config-path: classpath:docusaurus-config/sidebars.js
+    plugin-dependencies:
+      - "@node-rs/jieba"
+      - "docusaurus-lunr-search"
+      - "remark-math@6"
+      - "rehype-katex@7"
   note-picture:
     repo-url: https://gitee.com/wangziming707/note-pic.git
     static-path: /image #在静态资源映射中的相对地址
@@ -42,8 +47,3 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger.html
-
-server:
-  port: 8080
-  servlet:
-    context-path: /test

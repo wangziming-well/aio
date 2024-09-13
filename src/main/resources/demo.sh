@@ -70,4 +70,4 @@ rm -rf ${img_target_dir}/*
 cp -r ${img_git_dir}/img $img_target_dir
 echo -e "${success_prefix}复制图片成功"
 
-echo -e "\033[1;37m =========重构静态文档网站完成========= \033[0m"[root@iZuf67ajbjcwo18jfyxgnbZ home]#
+echo -e "\033[1;37m =========重构静态文档网站完成========= \033[0m"

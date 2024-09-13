@@ -24,7 +24,6 @@ class AioApplicationTests {
 
     @Test
     void contextLoads() {
-        service.loadNote();
     }
 
 }

@@ -29,8 +29,9 @@ public class DocusaurusProperties {
     public static class Project {
         private String name;
         private String staticPath;
-        private String docusaurusConfigFileName;
-        private String sidebarsConfigFileName;
+        private String docusaurusConfigPath;
+        private String sidebarsConfigPath;
+        private String[] pluginDependencies;
     }
 
     @Data

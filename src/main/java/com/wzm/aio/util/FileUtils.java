@@ -1,13 +1,10 @@
 package com.wzm.aio.util;
 
 import org.springframework.util.Assert;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -101,7 +98,7 @@ public class FileUtils {
         Assert.notNull(directory,"directory不能为空");
         File file = directory.toFile();
         if (!file.exists())
-            throw new RuntimeException("directory不存在");
+            return;
         if (file.isFile())
             throw new RuntimeException("directory不是文件夹");
         File[] files = file.listFiles();

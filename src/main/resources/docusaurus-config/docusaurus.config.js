@@ -19,12 +19,12 @@ const config = {
   title: '王梓铭的个人博客',
   tagline: 'Coding',
   favicon: 'img/favicon.ico',
-
+	trailingSlash: false,
   // Set the production url of your site here
-  url: 'http://47.116.126.160/',
+  url: 'http://localhost:8080/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: '/note',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
