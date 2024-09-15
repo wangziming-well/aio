@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class DocusaurusProperties {
 
 
-    private String staticLocation;
-
     private String workDirectory;
 
     private String noteRepoUrl;
@@ -28,6 +26,7 @@ public class DocusaurusProperties {
     @Data
     public static class Project {
         private String name;
+        private String version;
         private String staticPath;
         private String docusaurusConfigPath;
         private String sidebarsConfigPath;
@@ -39,5 +38,8 @@ public class DocusaurusProperties {
         private String repoUrl;
         private String staticPath;
         private String imgLocation;
+        private String cloudRequestPath;
+        private String localRequestPath;
+
     }
 }

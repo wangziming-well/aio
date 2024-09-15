@@ -1,9 +1,7 @@
 package com.wzm.aio.service;
 
 import com.wzm.aio.properties.DocusaurusProperties;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.nio.file.Path;
@@ -12,40 +10,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 为了让本地的md文件能够在docusaurus中正确渲染，需要对md文件做一些处理
+ * 为了让本地的md文件能够在docusaurus中正确渲染为mdx格式，需要对md文件做一些适配处理
+ * 同时为了避免cors，将md文档中对图床的访问改为对本地图片的访问，会拉取图床到本地并提供静态资源映射
+ * TODO 解决**note:**没有渲染的问题
  */
 
 @Component
 public class MarkdownInterceptor {
 
-
-
-
-    private final String remotePicRootPath;
+    private final String cloudPicRootPath;
     private final String localPicRootPath;
 
-    public MarkdownInterceptor(DocusaurusProperties properties, ServerProperties serverProperties) {
-        this.remotePicRootPath = properties.getNotePicture().getRepoUrl().replaceAll("\\.git","") + "/raw/master/img";
-
-        this.localPicRootPath = getLocalPicRootPath(properties,serverProperties);
+    public MarkdownInterceptor(DocusaurusProperties properties) {
+        // https://gitee.com/wangziming707/note-pic/raw/master/img
+        this.cloudPicRootPath = properties.getNotePicture().getCloudRequestPath();
+        // http://localhost:80/image
+        this.localPicRootPath = properties.getNotePicture().getLocalRequestPath();
     }
-
-    private String getLocalPicRootPath(DocusaurusProperties properties, ServerProperties serverProperties) {
-        StringBuilder sb = new StringBuilder();
-
-        Integer port = serverProperties.getPort();
-        String contextPath = serverProperties.getServlet().getContextPath();
-        String picStaticPath = properties.getNotePicture().getStaticPath();
-        port = port == null ? 8080 : port;
-        contextPath = contextPath == null ? "" : contextPath;
-        sb.append("http://localhost:").append(port);
-        if (StringUtils.hasText(contextPath))
-            sb.append("/").append(contextPath.replace("/",""));
-        sb.append("/").append(picStaticPath.replace("/",""));
-        return sb.toString();
-    }
-
-    public void intercept(Path path){
+    public void intercept(Path path) {
         try {
             recursionFile(path.toFile());
         } catch (Exception e) {
@@ -55,12 +37,12 @@ public class MarkdownInterceptor {
 
 
     private void recursionFile(File file) throws Exception {
-        if (file.isDirectory()){
+        if (file.isDirectory()) {
             for (File f : Objects.requireNonNull(file.listFiles())) {
                 recursionFile(f);
             }
         } else {
-            if (file.getName().contains(".md") )
+            if (file.getName().contains(".md"))
                 processMd(file);
         }
     }
@@ -77,7 +59,7 @@ public class MarkdownInterceptor {
         }
         reader.close();
         String contains = sb.toString();
-        contains = InnerInterceptor.intercept(contains,fileName,this.remotePicRootPath,this.localPicRootPath);
+        contains = InnerInterceptor.intercept(contains, fileName, this.cloudPicRootPath, this.localPicRootPath);
         BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
         writer.write(contains);
@@ -85,14 +67,13 @@ public class MarkdownInterceptor {
     }
 
 
-
     private static class InnerInterceptor {
 
-        public static String intercept(String contains, String filename,String remotePicRootPath, String localPicRootPath) {
+        public static String intercept(String contains, String filename, String remotePicRootPath, String localPicRootPath) {
             contains = addTitle(contains, filename);
             contains = changeMysqlCodeBlock(contains);
             contains = dealReactStyleProblem(contains);
-            contains = dealImageLink(contains,remotePicRootPath,localPicRootPath);
+            contains = dealImageLink(contains, remotePicRootPath, localPicRootPath);
             contains = dealTitle(contains);
             contains = dealSuperscript(contains);
             return contains;
@@ -145,7 +126,7 @@ public class MarkdownInterceptor {
             return sb.toString();
         }
 
-        private static String dealImageLink(String contains,String remotePicRootPath,String localPicRootPath) {
+        private static String dealImageLink(String contains, String remotePicRootPath, String localPicRootPath) {
             return contains.replaceAll(remotePicRootPath, localPicRootPath);
         }
 

@@ -9,6 +9,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import java.io.*;
+import java.util.function.Consumer;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
@@ -16,24 +17,33 @@ import java.io.*;
 public class AioApplication {
 
 
-    public static void main(String[] args) throws ClassNotFoundException, IOException {
+    public static void main(String[] args) throws ClassNotFoundException {
         ConfigurableApplicationContext run = SpringApplication.run(AioApplication.class, args);
         Class.forName("com.wzm.aio.util.TextParser");
         SpringUtils.setApplicationContext(run);
-        File file = new File("D:\\AIO\\command.log");
-        FileOutputStream outputStream = new FileOutputStream(file);
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        String path = "D:\\AIO\\command.log";
         DocusaurusService service = run.getBean(DocusaurusService.class);
-        service.setCommandOutputConsumer(s -> {
+        service.setCommandOutputConsumer(System.out::println);
+        service.loadDocusaurusWeb();
+    }
+
+    public static Consumer<String> outputToFile(String path){
+        File file = new File(path);
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        OutputStreamWriter writer = new OutputStreamWriter(outputStream);
+        return s -> {
             try {
                 writer.write(s + "\n");
                 writer.flush();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        });
-        service.loadDocusaurusWeb();
-        writer.close();
+        };
     }
 
 }
