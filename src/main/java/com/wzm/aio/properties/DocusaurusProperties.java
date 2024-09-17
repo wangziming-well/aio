@@ -13,15 +13,10 @@ public class DocusaurusProperties {
 
     private String noteRepoUrl;
 
-    private final Project project;
+    private final Project project = new Project();
 
-    private final NotePicture notePicture;
+    private final NotePicture notePicture= new NotePicture();
 
-
-    public DocusaurusProperties() {
-        this.project = new Project();
-        this.notePicture = new NotePicture();
-    }
 
     @Data
     public static class Project {

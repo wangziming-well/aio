@@ -1,10 +1,10 @@
 docusaurus:
-  work-directory: D:/AIO #工作位置
+  work-directory: D:\AIO #工作位置
   note-repo-url: https://gitee.com/wangziming707/note.git
   project:
     name: personal-note-website # 项目名称
     version: 3.5.2 #docusaurus项目版本
-    static-path: D:/AIO/static/note #在静态资源映射中的相对地址
+    static-path: D:\AIO\static\note #在静态资源映射中的相对地址
     docusaurus-config-path: classpath:docusaurus-config/docusaurus.config.js
     sidebars-config-path: classpath:docusaurus-config/sidebars.js
     plugin-dependencies: # 项目需要的依赖
@@ -16,8 +16,9 @@ docusaurus:
     local-request-path: http://localhost:80/image # 本地项目提供的图片访问根路径
     cloud-request-path: https://gitee.com/wangziming707/note-pic/raw/master/img # 图床访问根路径
     repo-url: https://gitee.com/wangziming707/note-pic.git # 图床git仓库
-    static-path: D:/AIO/static/image #在本地静态资源映射中的相对地址
+    static-path: D:\AIO\static\image #在本地静态资源映射中的相对地址
     img-location: /img  #图片在远程仓库中的位置
+
 spring:
   application:
     name: aio

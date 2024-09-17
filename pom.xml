@@ -126,7 +126,17 @@
             <artifactId>expect4j</artifactId>
             <version>1.9</version>
         </dependency>
-
+        <!--音频处理 -->
+        <dependency>
+            <groupId>ws.schild</groupId>
+            <artifactId>jave-core</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>ws.schild</groupId>
+            <artifactId>jave-nativebin-win64</artifactId>
+            <version>3.5.0</version>
+        </dependency>
     </dependencies>
 
     <build>

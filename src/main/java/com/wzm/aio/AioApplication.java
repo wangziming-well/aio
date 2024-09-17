@@ -21,7 +21,6 @@ public class AioApplication {
         ConfigurableApplicationContext run = SpringApplication.run(AioApplication.class, args);
         Class.forName("com.wzm.aio.util.TextParser");
         SpringUtils.setApplicationContext(run);
-        String path = "D:\\AIO\\command.log";
         DocusaurusService service = run.getBean(DocusaurusService.class);
         service.setCommandOutputConsumer(System.out::println);
         service.loadDocusaurusWeb();
@@ -29,7 +28,7 @@ public class AioApplication {
 
     public static Consumer<String> outputToFile(String path){
         File file = new File(path);
-        FileOutputStream outputStream = null;
+        FileOutputStream outputStream;
         try {
             outputStream = new FileOutputStream(file);
         } catch (FileNotFoundException e) {

@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 /**
  * 为了让本地的md文件能够在docusaurus中正确渲染为mdx格式，需要对md文件做一些适配处理
  * 同时为了避免cors，将md文档中对图床的访问改为对本地图片的访问，会拉取图床到本地并提供静态资源映射
- * TODO 解决**note:**没有渲染的问题
  */
 
 @Component
@@ -27,6 +26,7 @@ public class MarkdownInterceptor {
         // http://localhost:80/image
         this.localPicRootPath = properties.getNotePicture().getLocalRequestPath();
     }
+
     public void intercept(Path path) {
         try {
             recursionFile(path.toFile());
@@ -69,6 +69,12 @@ public class MarkdownInterceptor {
 
     private static class InnerInterceptor {
 
+        public static void main(String[] args) {
+            String content = "**注意：**url-pattern代表客户端访问路径，在这里必须写带`/`的相对路径";
+            String s = dealBoldFormat(content);
+            System.out.println(s);
+        }
+
         public static String intercept(String contains, String filename, String remotePicRootPath, String localPicRootPath) {
             contains = addTitle(contains, filename);
             contains = changeMysqlCodeBlock(contains);
@@ -76,8 +82,10 @@ public class MarkdownInterceptor {
             contains = dealImageLink(contains, remotePicRootPath, localPicRootPath);
             contains = dealTitle(contains);
             contains = dealSuperscript(contains);
+            contains = dealBoldFormat(contains);
             return contains;
         }
+
 
         private static String addTitle(String contains, String filename) {
             if (filename.contains("_"))
@@ -134,6 +142,7 @@ public class MarkdownInterceptor {
             return contains.replaceAll("# ", "## ");
         }
 
+        //处理 ^xx^上标
         private static String dealSuperscript(String contains) {
             Pattern compile = Pattern.compile("\\^(.*?)\\^");
             Matcher matcher = compile.matcher(contains);
@@ -141,6 +150,19 @@ public class MarkdownInterceptor {
                 String all = matcher.group(0);
                 String inner = matcher.group(1);
                 contains = contains.replace(all, inner);
+            }
+            return contains;
+        }
+
+        // 将 **xx!** 转换为 **xx**!
+        private static String dealBoldFormat(String contains) {
+            Pattern compile = Pattern.compile("\\*\\*(.*?)[:：]\\*\\*");
+            Matcher matcher = compile.matcher(contains);
+            while (matcher.find()) {
+                String all = matcher.group(0);
+                String inner = matcher.group(1);
+                contains = contains.replace(all, "**" + inner + "**:");
+
             }
             return contains;
         }

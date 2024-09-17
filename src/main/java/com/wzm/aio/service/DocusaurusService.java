@@ -107,7 +107,9 @@ public class DocusaurusService {
         try {
             File localDocusaurusConfig = resourceLoader.getResource(project.getDocusaurusConfigPath()).getFile();
             File localSidebarsConfig = resourceLoader.getResource(project.getSidebarsConfigPath()).getFile();
+            logger.info("复制文件["+localDocusaurusConfig+"]到文件夹["+this.projectRootPath+"]下");
             FileUtils.copy(localDocusaurusConfig, this.projectRootPath);
+            logger.info("复制文件["+localSidebarsConfig+"]到文件夹["+this.projectRootPath+"]下");
             FileUtils.copy(localSidebarsConfig, this.projectRootPath);
         } catch (IOException e) {
             throw new RuntimeException("加载docusaurus配置文件异常", e);
@@ -117,7 +119,7 @@ public class DocusaurusService {
     }
 
     private void loadNote() {
-        logger.info("加载note到docusaurus项目中");
+        logger.info("加载note到docusaurus项目");
 
         //从远程仓库拉取
         String noteRepoUrl = properties.getNoteRepoUrl();
@@ -135,7 +137,7 @@ public class DocusaurusService {
         //处理note中md文件
         logger.info("拦截改造所有md文件");
         interceptor.intercept(target);
-        logger.info("完成加载note到docusaurus项目中");
+        logger.info("完成加载note到docusaurus项目");
 
     }
 
@@ -162,10 +164,10 @@ public class DocusaurusService {
         String[] pluginDependencies = project.getPluginDependencies();
         for (String pluginDependence : pluginDependencies) {
             if (pluginDependenceExists(pluginDependence)) {
-                logger.info("依赖[" + pluginDependence + "]已存在");
+                logger.info("检查依赖[" + pluginDependence + "]:已存在");
                 continue;
             }
-            logger.info("依赖[" + pluginDependence + "]不存在，进行安装操作");
+            logger.info("检查依赖[" + pluginDependence + "]:不存在，进行安装操作");
             String command = "npm install --save " + pluginDependence;
             consumeCommand(command);
             Shell.exec(this.commandOutputConsumer, this.projectRootPath, command);
