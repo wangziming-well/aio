@@ -35,11 +35,15 @@
     <select id="selectById" resultMap="NotepadMap">
         select * from momo_notepad where id = #{id}
     </select>
+    <select id="selectByTitle"  resultMap="NotepadMap">
+        select * from momo_notepad where title = #{title}
+    </select>
 
     <select id="selectByCloudId" resultMap="NotepadMap">
         select * from momo_notepad where cloud_id = #{cloudId}
 
     </select>
+
 
     <update id="updateByLocalId" parameterType="com.wzm.aio.pojo.model.MomoLocalNotepad">
         update momo_notepad

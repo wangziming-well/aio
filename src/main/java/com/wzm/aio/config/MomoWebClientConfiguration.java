@@ -1,13 +1,10 @@
 package com.wzm.aio.config;
 
-import com.wzm.aio.api.MomoOpenApi;
+import com.wzm.aio.api.momo.MomoOpenApi;
 import com.wzm.aio.properties.MomoProperties;
 import lombok.NonNull;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -38,7 +35,7 @@ public class MomoWebClientConfiguration {
     }
 
     @Bean
-    MomoOpenApi demoApi() {
+    MomoOpenApi momoOpenApi() {
         WebClient webClient = WebClient.builder()
                 .baseUrl(BASE_URL)
                 .defaultHeaders(this::setDefaultHeaders)

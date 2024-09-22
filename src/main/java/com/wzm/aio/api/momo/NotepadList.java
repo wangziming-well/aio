@@ -1,4 +1,4 @@
-package com.wzm.aio.api.entity;
+package com.wzm.aio.api.momo;
 
 import com.wzm.aio.pojo.model.MomoCloudNotepad;
 import lombok.Data;

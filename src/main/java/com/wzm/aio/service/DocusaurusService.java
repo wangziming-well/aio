@@ -40,13 +40,12 @@ public class DocusaurusService {
         this.resourceLoader = resourceLoader;
         this.git = new Git();
         initDirectory();
-        //TODO 优化命令日志的处理
     }
 
     //初始化文件夹
     private void initDirectory() {
         String workDirectory = this.properties.getWorkDirectory();
-        FileUtils.mkdir(workDirectory);
+        FileUtils.mkdirs(workDirectory);
     }
 
     public void loadDocusaurusWeb() {
@@ -197,7 +196,6 @@ public class DocusaurusService {
      *
      * @param commandOutputConsumer 命令行输出的消费者
      */
-
     public void setCommandOutputConsumer(Consumer<String> commandOutputConsumer) {
         this.commandOutputConsumer = commandOutputConsumer;
     }

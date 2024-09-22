@@ -15,11 +15,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.ObjectUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @Transactional
@@ -66,6 +64,11 @@ public class MomoLocalService {
         return result;
     }
 
+    public int getNotepadId(String title){
+        MomoLocalNotepad momoLocalNotepad = momoNotepadMapper.selectByTitle(title);
+        return momoLocalNotepad.getId();
+    }
+
     public List<MomoLocalNotepad> getAllNotepads() {
         List<MomoLocalNotepad> momoLocalNotepads = momoNotepadMapper.selectAll();
         for (MomoLocalNotepad notepad :momoLocalNotepads){
@@ -106,11 +109,11 @@ public class MomoLocalService {
             notepadDictMapper.insert(notepadId, dictId);
         }
     }
-    //更新本地notepad，没有更新notepad对应的wordList
+    //更新本地notepad，不更新notepad对应的wordList
     public void updateNotepad(MomoLocalNotepad localNotepad) {
-        if (ObjectUtils.isEmpty(localNotepad.getId()))
+        if (!ObjectUtils.isEmpty(localNotepad.getCloudId()))
             momoNotepadMapper.updateByCloudId(localNotepad);
-        else if (ObjectUtils.isEmpty(localNotepad.getCloudId()))
+        else if (!ObjectUtils.isEmpty(localNotepad.getId()))
             momoNotepadMapper.updateByLocalId(localNotepad);
         else
             throw new RuntimeException("id和cloudId都为空");
@@ -153,36 +156,28 @@ public class MomoLocalService {
         return toInsert.getId();
     }
 
-    public AddWordsResult addWordsToNotepad(int localId,List<String> words){
+    /**
+     * 根据localId向本地notepad中添加words
+     * @param localId 本地notepad id
+     * @param words 要添加的word列表
+     * @return 返回一个Map，键为添加的单词，值为布尔值，true表示添加成功，false表示添加失败，一般是因为notepad中已经有了该单词
+     */
+
+    public Map<String,Boolean> addWordsToNotepad(int localId, List<String> words){
         List<NotepadDictPair> notepadDictPairs = notepadDictMapper.selectByNotepadId(localId);
         int[] currWordIds = notepadDictPairs.stream().mapToInt(NotepadDictPair::getDictId).toArray();
-        ArrayList<String> existedWords = new ArrayList<>();
-        ArrayList<String> newWords = new ArrayList<>();
+        HashMap<String, Boolean> result = new HashMap<>();
         for (String word: words){
             int wordId = addGlobalWord(word);
             int index = Arrays.binarySearch(currWordIds, wordId);
             if (index < 0){ //word不在notepad中，尝试添加关联关系
                 notepadDictMapper.insert(localId,wordId);
-                newWords.add(word);
+                result.put(word,true);
             } else { //word在notepad中
-                existedWords.add(word);
+                result.put(word,false);
             }
         }
-        return new AddWordsResult(existedWords,newWords);
+        return result;
 
     }
-
-    @Getter
-    @ToString
-    public static class AddWordsResult {
-
-        private final List<String> existedWords;
-        private final List<String> newWords;
-
-        public AddWordsResult(List<String> existedWords, List<String> newWords) {
-            this.existedWords = Collections.unmodifiableList(existedWords);
-            this.newWords = Collections.unmodifiableList(newWords);
-        }
-    }
-
 }

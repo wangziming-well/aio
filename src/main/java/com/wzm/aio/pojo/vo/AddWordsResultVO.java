@@ -1,25 +1,38 @@
 package com.wzm.aio.pojo.vo;
 
-import com.wzm.aio.util.TextParser;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Data
-@AllArgsConstructor
 public class AddWordsResultVO {
-    @Getter
     @Setter
+    @Getter
+    @AllArgsConstructor
     public static class ResultEntry{
 
-        public ResultEntry(String word){
-            this.word = word;
-        }
 
         private String word;
-        private boolean newWords =false;
+        private boolean flag;
     }
 
-    private List<ResultEntry> parsedWords;
+    private List<ResultEntry> parsedWords = new ArrayList<>();
+
+    public void addEntry(String word,boolean flag){
+        parsedWords.add(new ResultEntry(word,flag));
+    }
+
+    public static AddWordsResultVO fromMap(Map<String,Boolean> maps){
+        Set<Map.Entry<String, Boolean>> entries = maps.entrySet();
+        AddWordsResultVO vo = new AddWordsResultVO();
+        for (Map.Entry<String,Boolean> entry : entries){
+            vo.addEntry(entry.getKey(),entry.getValue());
+        }
+        return vo;
+    }
+
 
 }

@@ -177,8 +177,8 @@ public class Shell {
 
 
     private static class MyIOPair implements IOPair {
-        Reader is;
-        Writer os;
+        final Reader is;
+        final Writer os;
 
         public MyIOPair(Reader is, Writer os) {
             this.is = is;

@@ -1,4 +1,4 @@
-package com.wzm.aio.api;
+package com.wzm.aio.api.momo;
 
 import lombok.Data;
 

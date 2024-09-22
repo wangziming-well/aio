@@ -36,13 +36,8 @@ public abstract class TextParser {
         public boolean test(ResultEntry s) {
             if (s.getWord().length() == 1)
                 return false;
-
             PartOfSpeech pos = s.getPos();
-            if (pos == PartOfSpeech.ARTICLE
-                    || pos == PartOfSpeech.PRONOUN
-                    || pos == PartOfSpeech.NUll  )
-                return false;
-            return true;
+            return pos != PartOfSpeech.ARTICLE && pos != PartOfSpeech.PRONOUN && pos != PartOfSpeech.NUll;
         }
     }
 
@@ -58,16 +53,8 @@ public abstract class TextParser {
     }
 
     public static List<ResultEntry> parse(String text) {
-        long start = System.currentTimeMillis();
         List<String> words = cleanAndTokenize(text);
-        long end = System.currentTimeMillis();
-        System.out.println("cleanAndTokenize:" + (end - start));
-        start = System.currentTimeMillis();
-        List<ResultEntry> result = annotateWords(words);
-        end = System.currentTimeMillis();
-        System.out.println("annotateWords:" + (end - start));
-
-        return result;
+        return annotateWords(words);
     }
 
     //使用npl标记word

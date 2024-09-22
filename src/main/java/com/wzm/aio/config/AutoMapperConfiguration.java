@@ -1,11 +1,8 @@
 package com.wzm.aio.config;
 
-import com.wzm.aio.util.TextParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 @Configuration

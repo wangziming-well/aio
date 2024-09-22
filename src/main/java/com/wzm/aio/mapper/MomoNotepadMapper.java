@@ -13,6 +13,8 @@ public interface MomoNotepadMapper {
     List<MomoLocalNotepad> selectAll();
     MomoLocalNotepad selectById(int id);
 
+    MomoLocalNotepad selectByTitle(String title);
+
     MomoLocalNotepad selectByCloudId(String cloudId);
 
     int updateByLocalId(MomoLocalNotepad localNotepad);
