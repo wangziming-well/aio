@@ -61,21 +61,23 @@ public class FrDicApiAccessFrequencyAspect implements DisposableBean {
     }
 
     private synchronized void checkFrequency(long current) {
-        checkFrequencyLimit(accessIn60s, periodOn60s, frequencyOn60s, current);
-        checkFrequencyLimit(accessIn30m, periodOn30m, frequencyOn30m, current);
-
+        int accessCountIn60s = checkFrequencyLimit(accessIn60s, periodOn60s, frequencyOn60s, current);
+        int accessCountIn3m = checkFrequencyLimit(accessIn30m, periodOn30m, frequencyOn30m, current);
+        logger.debug( "frDicApi访问统计:"+
+                (periodOn60s / 1000) + "s内访问["+ accessCountIn60s+"]次;"+
+                (periodOn30m / 1000) + "s内访问["+ accessCountIn3m+"]次" );
         accessIn60s.add(current);
         accessIn30m.add(current);
     }
 
-    private void checkFrequencyLimit(Queue<Long> accessQueue, long period, int frequencyLimit, long currentTime) {
+    private int checkFrequencyLimit(Queue<Long> accessQueue, long period, int frequencyLimit, long currentTime) {
         while (!accessQueue.isEmpty() && currentTime - accessQueue.peek() >= period) {
             accessQueue.remove();
         }
-        logger.debug((period / 1000) + "s内访问次数: " + accessQueue.size());
         if (accessQueue.size() >= frequencyLimit) {
             throw new RuntimeException("访问频率过高,高于" + (period / 1000) + "s" + frequencyLimit + "次");
         }
+        return accessQueue.size();
     }
 
     @Override

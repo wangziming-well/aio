@@ -1,9 +1,7 @@
 package com.wzm.aio.config;
 
-import com.wzm.aio.api.frdic.FrWord;
 import com.wzm.aio.properties.ProjectProperties;
-import com.wzm.aio.service.FrDicService;
-import com.wzm.aio.service.MomoService;
+import com.wzm.aio.service.LocalApiService;
 import com.wzm.aio.util.SpringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,8 +11,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextClosedEvent;
-
-import java.util.List;
 
 /**
  * spring生命周期配置
@@ -26,18 +22,14 @@ public class SpringLifecycleConfiguration {
 
     private final ApplicationContext applicationContext;
 
-    private final MomoService momoService;
-
-    private final FrDicService frDicService;
+    private final LocalApiService service;
 
     private final ProjectProperties projectProperties;
 
     public SpringLifecycleConfiguration(ApplicationContext applicationContext,
-                                        MomoService momoService, FrDicService frDicService,
-                                        ProjectProperties projectProperties) {
+                                        LocalApiService service, ProjectProperties projectProperties) {
         this.applicationContext = applicationContext;
-        this.momoService = momoService;
-        this.frDicService = frDicService;
+        this.service = service;
         this.projectProperties = projectProperties;
     }
 
@@ -49,9 +41,9 @@ public class SpringLifecycleConfiguration {
             logger.info("springboot加载完毕，进行项目初始化回调");
             initProcess();
             if (init.isMomoPull())
-                pullMomoToLocal();
+                service.momoPull();
             if (init.isFrSync())
-                syncWordsToMomo();
+                service.syncFrWordsToMomo();
             logger.info("初始化回调完成");
 
         };
@@ -66,16 +58,6 @@ public class SpringLifecycleConfiguration {
         SpringUtils.setApplicationContext(applicationContext);
     }
 
-    private void pullMomoToLocal() {
-        momoService.pull();
-    }
-
-    private void syncWordsToMomo() {
-        List<FrWord> allWords = frDicService.getAllWords("0");
-        List<String> wordList = allWords.stream().map(FrWord::getWord).toList();
-        momoService.addWordsToNotepad("Code", wordList);
-    }
-
     @Bean
     public ApplicationListener<ContextClosedEvent> contextClosedEventApplicationListener() {
         ProjectProperties.Closed closed = projectProperties.getClosed();
@@ -83,7 +65,7 @@ public class SpringLifecycleConfiguration {
         return event -> {
             logger.info("spring容器关闭回调开始");
             if (closed.isMomoPush())
-                momoService.push();
+                service.momoPush();
             logger.info("spring容器关闭回调结束");
         };
     }

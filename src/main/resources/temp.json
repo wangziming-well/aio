@@ -1,0 +1,6 @@
+{
+  "headers": "org.springframework.web.reactive.function.client.DefaultClientResponse$DefaultHeaders@12e9be58",
+  "from-request": "POST https://open.maimemo.com/open/api/v1/notepads/np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5",
+  "body": "{\"errors\":[],\"data\":{\"notepad\":{\"id\":\"np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5\",\"type\":\"NOTEPAD\",\"status\":\"UNPUBLISHED\",\"title\":\"Code\",\"brief\":\"Code\",\"tags\":[\"其他\"],\"created_time\":\"2024-09-24T11:05:56.269Z\",\"updated_time\":\"2024-09-24T11:10:23.134Z\"}},\"success\":true}",
+  "cookies": {}
+}

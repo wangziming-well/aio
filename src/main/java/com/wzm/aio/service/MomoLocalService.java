@@ -6,13 +6,10 @@ import com.wzm.aio.pojo.model.Word;
 import com.wzm.aio.mapper.DictionaryMapper;
 import com.wzm.aio.mapper.MomoNotepadMapper;
 import com.wzm.aio.mapper.NotepadDictMapper;
-import com.wzm.aio.properties.MomoProperties;
-import lombok.Getter;
-import lombok.ToString;
+import com.wzm.aio.properties.OpenApiProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
@@ -28,10 +25,10 @@ public class MomoLocalService {
     private final DictionaryMapper dictionaryMapper;
     private final NotepadDictMapper notepadDictMapper;
 
-    private final MomoProperties properties;
+    private final OpenApiProperties properties;
 
     public MomoLocalService(MomoNotepadMapper momoNotepadMapper
-            , DictionaryMapper dictionaryMapper, NotepadDictMapper notepadDictMapper, MomoProperties properties) {
+            , DictionaryMapper dictionaryMapper, NotepadDictMapper notepadDictMapper, OpenApiProperties properties) {
 
         this.momoNotepadMapper = momoNotepadMapper;
         this.dictionaryMapper = dictionaryMapper;
@@ -79,7 +76,7 @@ public class MomoLocalService {
 
     private void checkCount() {
         int count = momoNotepadMapper.count();
-        int maxCount = properties.getNotepad().getMaxCount();
+        int maxCount = properties.getMomo().getNotepadMaxCount();
         if (count >= maxCount)
             throw new IndexOutOfBoundsException("本地notepad的数量不能大于" + maxCount);
     }
@@ -89,7 +86,6 @@ public class MomoLocalService {
      * 新增一个本地notepad，和该notepad中的words
      *
      * @param notepad 要添加的notepad
-     * @return 新增成功返回ture
      * @throws IndexOutOfBoundsException 当notepad的数量不能大于7时
      */
     public void addNotepad(MomoLocalNotepad notepad) {
@@ -106,7 +102,8 @@ public class MomoLocalService {
                 dictionaryMapper.insertAndGetPrimaryKey(localWord);
             }
             int dictId = localWord.getId();
-            notepadDictMapper.insert(notepadId, dictId);
+            linkWordToNotepad(notepadId, dictId);
+
         }
     }
     //更新本地notepad，不更新notepad对应的wordList
@@ -171,7 +168,7 @@ public class MomoLocalService {
             int wordId = addGlobalWord(word);
             int index = Arrays.binarySearch(currWordIds, wordId);
             if (index < 0){ //word不在notepad中，尝试添加关联关系
-                notepadDictMapper.insert(localId,wordId);
+                linkWordToNotepad(localId,wordId);
                 result.put(word,true);
             } else { //word在notepad中
                 result.put(word,false);
@@ -179,5 +176,12 @@ public class MomoLocalService {
         }
         return result;
 
+    }
+
+    public void linkWordToNotepad(int localNotepadId,int wordId){
+        NotepadDictPair select = notepadDictMapper.select(localNotepadId, wordId);
+        if (select != null)
+            return;
+        notepadDictMapper.insert(localNotepadId,wordId);
     }
 }

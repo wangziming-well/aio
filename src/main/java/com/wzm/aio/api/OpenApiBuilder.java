@@ -1,18 +1,14 @@
 package com.wzm.aio.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +24,6 @@ public class OpenApiBuilder<T> {
     private final Class<T> clazz;
     private HttpHeaders defaultHttpHeaders = new HttpHeaders();
     private final List<ExchangeFilterFunction> filters = new ArrayList<>();
-    private static final Log logger = LogFactory.getLog(OpenApiBuilder.class);
 
     private OpenApiBuilder(String baseUrl, Class<T> clazz) {
         this.baseUrl = baseUrl;
@@ -36,11 +31,13 @@ public class OpenApiBuilder<T> {
     }
 
     public static <T> OpenApiBuilder<T> builder(String baseUrl, Class<T> clazz) {
+        Assert.notNull(baseUrl, "baseUrl不能为空");
+        Assert.notNull(clazz, "clazz不能为空");
         return new OpenApiBuilder<>(baseUrl, clazz);
     }
 
     public OpenApiBuilder<T> defaultHeaders(HttpHeaders defaultHttpHeaders) {
-        this.defaultHttpHeaders = defaultHttpHeaders;
+        this.defaultHttpHeaders.addAll(defaultHttpHeaders);
         return this;
     }
 
@@ -61,7 +58,14 @@ public class OpenApiBuilder<T> {
     }
 
     public T build() {
-        WebClient webClient = WebClient.builder()
+        WebClient webClient = getWebClient();
+        WebClientAdapter adapter = WebClientAdapter.create(webClient);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        return factory.createClient(this.clazz);
+    }
+
+    private WebClient getWebClient() {
+        return WebClient.builder()
                 .baseUrl(this.baseUrl)
                 .defaultHeaders(httpHeaders -> httpHeaders.addAll(defaultHttpHeaders))
                 .filters(filters -> filters.addAll(this.filters))
@@ -71,8 +75,5 @@ public class OpenApiBuilder<T> {
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                         .responseTimeout(Duration.ofSeconds(this.timeout))))
                 .build();
-        WebClientAdapter adapter = WebClientAdapter.create(webClient);
-        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
-        return factory.createClient(this.clazz);
     }
 }

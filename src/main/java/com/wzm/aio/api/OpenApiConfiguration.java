@@ -3,8 +3,7 @@ package com.wzm.aio.api;
 import com.wzm.aio.api.frdic.FrDicOpenApi;
 import com.wzm.aio.api.local.LocalOpenApi;
 import com.wzm.aio.api.momo.MomoOpenApi;
-import com.wzm.aio.properties.FrDicProperties;
-import com.wzm.aio.properties.MomoProperties;
+import com.wzm.aio.properties.OpenApiProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -14,49 +13,43 @@ import java.util.List;
 
 @Configuration
 public class OpenApiConfiguration {
-    private final MomoProperties momoProperties;
-    private final FrDicProperties frDicProperties;
 
-    public OpenApiConfiguration(MomoProperties momoProperties, FrDicProperties frDicProperties) {
-        this.momoProperties = momoProperties;
-        this.frDicProperties = frDicProperties;
+    private final OpenApiProperties properties;
+
+    public OpenApiConfiguration(OpenApiProperties properties) {
+
+        this.properties = properties;
     }
 
 
     @Bean
     public MomoOpenApi momoOpenApi(){
-        String baseUrl = "https://open.maimemo.com/open/api/v1/notepads";
+        OpenApiProperties.MomoProperties momo = properties.getMomo();
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(momoProperties.getToken());
+        headers.setBearerAuth(momo.getToken());
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        return OpenApiBuilder.builder(baseUrl,MomoOpenApi.class)
+        return OpenApiBuilder.builder(momo.getBaseUrl(),MomoOpenApi.class)
                 .defaultHeaders(headers)
-                .addFilter(ApiLoggingFilter.logRequest())
-                .addFilter(ApiLoggingFilter.logResponse())
-                .addFilter(ApiLoggingFilter.dealException())
+                .addFilter(ApiFilter.logFilter())
                 .build();
     }
 
     @Bean
     public FrDicOpenApi frDicOpenApi(){
-        String baseUrl = "https://api.frdic.com/api/open/v1/studylist";
+        OpenApiProperties.FrDicProperties frDic = properties.getFrDic();
         HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.AUTHORIZATION, frDicProperties.getToken());
+        headers.set(HttpHeaders.AUTHORIZATION, frDic.getToken());
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        return OpenApiBuilder.builder(baseUrl,FrDicOpenApi.class)
+        return OpenApiBuilder.builder(frDic.getBaseUrl(),FrDicOpenApi.class)
                 .defaultHeaders(headers)
-                .addFilter(ApiLoggingFilter.logRequest())
-                .addFilter(ApiLoggingFilter.logResponse())
-                .addFilter(ApiLoggingFilter.dealException())
+                .addFilter(ApiFilter.logFilter())
                 .build();
     }
     @Bean
     public LocalOpenApi localOpenApi(){
-        String baseUrl = "http://localhost:8080/";
-        return OpenApiBuilder.builder(baseUrl,LocalOpenApi.class)
-                .addFilter(ApiLoggingFilter.logRequest())
-                .addFilter(ApiLoggingFilter.logResponse())
-                .addFilter(ApiLoggingFilter.dealException())
+        String localBaseUrl = properties.getLocalBaseUrl();
+        return OpenApiBuilder.builder(localBaseUrl,LocalOpenApi.class)
+                .addFilter(ApiFilter.logFilter())
                 .build();
     }
 

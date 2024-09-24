@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/syncWord")
+@RequestMapping("/frdic")
 public class FrDicController {
 
     private final MomoService momoService;
@@ -26,12 +26,16 @@ public class FrDicController {
         this.frDicService = frDicService;
     }
 
-    @GetMapping
+    private static final String defaultFrWordBookId = "0";
+
+    private static final String syncedNotepadTitle = "Code";
+    //todo 指定notepad不存在时，创建一个新的notepad到云端和本地
+    @GetMapping("/syncWord")
     public Response<AddWordsResultVO> syncWord(){
-        List<FrWord> allWords = frDicService.getAllWords("0");
+        List<FrWord> allWords = frDicService.getAllWords(defaultFrWordBookId);
         List<String> wordList = allWords.stream().map(FrWord::getWord).toList();
         wordList = parseWords(wordList);
-        Map<String, Boolean> code = momoService.addWordsToNotepad("Code", wordList);
+        Map<String, Boolean> code = momoService.addWordsToNotepad(syncedNotepadTitle, wordList);
         return Response.ok(AddWordsResultVO.fromMap(code));
     }
 

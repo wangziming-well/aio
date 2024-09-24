@@ -5,6 +5,7 @@ import com.wzm.aio.api.momo.MomoResponse;
 import com.wzm.aio.pojo.model.MomoCloudNotepad;
 import com.wzm.aio.api.momo.NotepadList;
 import com.wzm.aio.api.momo.OneNotepad;
+import com.wzm.aio.util.ThreadUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -43,6 +44,7 @@ public class MomoCloudService {
         List<MomoCloudNotepad> notepads = response.getData().getNotepads();
         ArrayList<MomoCloudNotepad> result = new ArrayList<>();
         for (MomoCloudNotepad notepad : notepads) {
+            ThreadUtils.sleep(1500);
             result.add(getNotepad(notepad.getId()));
         }
         return result;
