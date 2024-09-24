@@ -17,7 +17,7 @@ public class OpenApiAspect {
     private static final Log logger = LogFactory.getLog(OpenApiAspect.class);
 
 
-    @Around("execution(* com.wzm.aio.api..*OpenApi.*(..))")
+    @Around("execution(* com.wzm.aio.api.momo.MomoOpenApi.*(..))")
     public Object advice(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         String signature = joinPoint.getSignature().toShortString();

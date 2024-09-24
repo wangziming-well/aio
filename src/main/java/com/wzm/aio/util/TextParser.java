@@ -12,34 +12,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public abstract class TextParser {
-    @Getter
-    public static class ResultEntry {
-        private final String word;
-        private final POSTag posTag;
-        private final PartOfSpeech pos;
 
-        private final String lemma;//词根
-
-        public ResultEntry(String word, POSTag posTag, PartOfSpeech pos, String lemma) {
-            this.word = word;
-            this.posTag = posTag;
-            this.pos = pos;
-            this.lemma = lemma;
-        }
-    }
-
-    //根据词性过滤,过滤冠词、代词、和非单词
-    //过滤单个字母
-    public static class ResultFilter implements Predicate<ResultEntry> {
-
-        @Override
-        public boolean test(ResultEntry s) {
-            if (s.getWord().length() == 1)
-                return false;
-            PartOfSpeech pos = s.getPos();
-            return pos != PartOfSpeech.ARTICLE && pos != PartOfSpeech.PRONOUN && pos != PartOfSpeech.NUll;
-        }
-    }
 
 
     private static final String WORD_SEP = " ";
@@ -55,6 +28,11 @@ public abstract class TextParser {
     public static List<ResultEntry> parse(String text) {
         List<String> words = cleanAndTokenize(text);
         return annotateWords(words);
+    }
+
+    public static List<ResultEntry> parse(List<String> words){
+        String collect = String.join(WORD_SEP, words);
+        return parse(collect);
     }
 
     //使用npl标记word
@@ -135,4 +113,32 @@ public abstract class TextParser {
     }
 
 
+    @Getter
+    public static class ResultEntry {
+        private final String word;
+        private final POSTag posTag;
+        private final PartOfSpeech pos;
+
+        private final String lemma;//词根
+
+        public ResultEntry(String word, POSTag posTag, PartOfSpeech pos, String lemma) {
+            this.word = word;
+            this.posTag = posTag;
+            this.pos = pos;
+            this.lemma = lemma;
+        }
+    }
+
+    //根据词性过滤,过滤冠词、代词、和非单词
+    //过滤单个字母
+    public static class ResultFilter implements Predicate<ResultEntry> {
+
+        @Override
+        public boolean test(ResultEntry s) {
+            if (s.getWord().length() == 1)
+                return false;
+            PartOfSpeech pos = s.getPos();
+            return pos != PartOfSpeech.ARTICLE && pos != PartOfSpeech.PRONOUN && pos != PartOfSpeech.NUll;
+        }
+    }
 }

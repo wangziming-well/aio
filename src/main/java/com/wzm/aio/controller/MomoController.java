@@ -36,18 +36,13 @@ public class MomoController {
     private List<String> parseWords(String text){
         List<TextParser.ResultEntry> parseResult = TextParser.parse(text)
                 .stream().filter(new TextParser.ResultFilter()).toList();
-        List<String> parsed = parseResult.stream()
+        return parseResult.stream()
                 .map(TextParser.ResultEntry::getLemma)
                 .distinct()
                 .sorted()
                 .toList();
-
-        for (TextParser.ResultEntry entry :parseResult){
-            System.out.printf("%-20s %-20s %-15s %-15s\n",entry.getWord(),entry.getLemma(),entry.getPos(),entry.getPosTag());
-        }
-        return  parsed;
-
     }
+
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Response<AddWordsResultVO> addWords(@RequestBody @Valid AddWordsDTO request){
