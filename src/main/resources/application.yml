@@ -29,17 +29,26 @@ docusaurus:
     img-location: /img  #图片在远程仓库中的位置
 
 open-api:
+  time-out: 30  # s
+  max-memory-size: 2  # MB
+  enable-log : true
+
   momo:
     base-url: https://open.maimemo.com/open/api/v1/notepads
-    token: ${token.momo}
+    headers:
+      Authorization: "Bearer ${token.momo}"
     notepad-max-count: 7
   fr-dic:
     base-url: https://api.frdic.com/api/open/v1/studylist
-    token: ${token.dr-dic}
+    headers:
+      Authorization: ${token.token.dr-dic}
   openai:
     token: ${token.openai}
     proxy-host: localhost
     proxy-port: 7890
+    model: gpt-3.5-turbo
+    temperature: 0.4
+    max-tokens: 20000
 
 
   local-base-url: http://localhost:8080
