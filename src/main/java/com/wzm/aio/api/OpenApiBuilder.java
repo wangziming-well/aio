@@ -20,9 +20,8 @@ public class OpenApiBuilder<T> {
     private static final int DEFAULT_TIME_OUT = 30;
     private int timeout = DEFAULT_TIME_OUT;
     private final String baseUrl;
-
     private final Class<T> clazz;
-    private HttpHeaders defaultHttpHeaders = new HttpHeaders();
+    private final HttpHeaders defaultHttpHeaders = new HttpHeaders();
     private final List<ExchangeFilterFunction> filters = new ArrayList<>();
 
     private OpenApiBuilder(String baseUrl, Class<T> clazz) {

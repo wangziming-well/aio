@@ -66,7 +66,7 @@ public class ApiFilter {
     private static Map<String, Object> responseMap(ClientResponse response) {
         HashMap<String, Object> map = new HashMap<>();
         map.put(FROM_REQUEST, response.request().getMethod() + " " + response.request().getURI());
-        map.put(HEADERS, response.headers().toString());
+        map.put(HEADERS, response.headers().asHttpHeaders().toSingleValueMap());
         map.put(COOKIES, response.cookies());
         return map;
     }

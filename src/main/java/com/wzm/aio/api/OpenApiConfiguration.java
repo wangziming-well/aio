@@ -17,14 +17,13 @@ public class OpenApiConfiguration {
     private final OpenApiProperties properties;
 
     public OpenApiConfiguration(OpenApiProperties properties) {
-
         this.properties = properties;
     }
 
 
     @Bean
     public MomoOpenApi momoOpenApi(){
-        OpenApiProperties.MomoProperties momo = properties.getMomo();
+        OpenApiProperties.Momo momo = properties.getMomo();
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(momo.getToken());
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -36,7 +35,7 @@ public class OpenApiConfiguration {
 
     @Bean
     public FrDicOpenApi frDicOpenApi(){
-        OpenApiProperties.FrDicProperties frDic = properties.getFrDic();
+        OpenApiProperties.FrDic frDic = properties.getFrDic();
         HttpHeaders headers = new HttpHeaders();
         headers.set(HttpHeaders.AUTHORIZATION, frDic.getToken());
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));

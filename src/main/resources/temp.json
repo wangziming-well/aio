@@ -1,6 +1,461 @@
-{
-  "headers": "org.springframework.web.reactive.function.client.DefaultClientResponse$DefaultHeaders@12e9be58",
-  "from-request": "POST https://open.maimemo.com/open/api/v1/notepads/np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5",
-  "body": "{\"errors\":[],\"data\":{\"notepad\":{\"id\":\"np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5\",\"type\":\"NOTEPAD\",\"status\":\"UNPUBLISHED\",\"title\":\"Code\",\"brief\":\"Code\",\"tags\":[\"其他\"],\"created_time\":\"2024-09-24T11:05:56.269Z\",\"updated_time\":\"2024-09-24T11:10:23.134Z\"}},\"success\":true}",
-  "cookies": {}
-}
+[
+  {
+    "headers": {
+      "Authorization": "NIS hkMFI2pi7qktjefiBrqibgMbjDLnwbxBdLcRSollsv2KKf5M9zI4jQ==",
+      "Accept": "application/json"
+    },
+    "method": "GET",
+    "attributes": {
+      "org.springframework.web.reactive.function.client.WebClient.uriTemplate": "https://api.frdic.com/api/open/v1/studylist/words/{id}?{queryParam0}={queryParam0[0]}&{queryParam1}={queryParam1[0]}&{queryParam2}={queryParam2[0]}",
+      "org.springframework.web.reactive.function.client.ClientRequest.LOG_ID": "20ae3a0e"
+    },
+    "url": "https://api.frdic.com/api/open/v1/studylist/words/0?language=en&page=0&pageSize=2147483647",
+    "cookies": {}
+  },
+  {
+    "headers": "[Content-Length:\"11517\", Content-Type:\"application/json; charset=utf-8\", Server:\"Microsoft-IIS/10.0\", X-Powered-By:\"ASP.NET\", Date:\"Wed, 25 Sep 2024 06:14:39 GMT\"]",
+    "from-request": "GET https://api.frdic.com/api/open/v1/studylist/words/0?language=en&page=0&pageSize=2147483647",
+    "body": {
+      "data": [
+        {
+          "word": "transaction",
+          "exp": "n. 处理，办理，执行; 交易；事务<br>形容词:   transactional <br>"
+        },
+        {
+          "word": "comprehensive",
+          "exp": "adj. 广泛的, 综合的副 词:   comprehensively <br>"
+        },
+        {
+          "word": "among the most",
+          "exp": ""
+        },
+        {
+          "word": "compelling",
+          "exp": "adj. 引人入胜的;扣人心弦的; 非常强烈的;不可抗拒的; 令人信服的，有说服力的"
+        },
+        {
+          "word": "consistent",
+          "exp": "adj. 一贯的, 始终如一的; 一致的, 符合的<br>副 词:   consistently <br>"
+        },
+        {
+          "word": "abstraction",
+          "exp": "n. 抽象,抽取; 抽象化；抽象过程; 抽象概念；抽象名称; 抽象性，抽象的特征; 出神；心不在焉; 不切实际的想法，空想；幻想的事物; 抽象主义; 抽象，抽离；抽离运符; 偷窃"
+        },
+        {
+          "word": "deliver",
+          "exp": "vt. 发表；递送；释放；给予；交付；给…接生; vi. 传送；投递；履行；实现; n. 投球<br><br>时 态:   delivered, delivering, delivers  <br>名 ..."
+        },
+        {
+          "word": "benefits",
+          "exp": "n. 利益，收益；福利，效益"
+        },
+        {
+          "word": "declarative",
+          "exp": "adj. 宣言的,公布的副 词:   declaratively <br>"
+        },
+        {
+          "word": "integration",
+          "exp": "n. 结合；整合；一体化; 混合，融合"
+        },
+        {
+          "word": "features",
+          "exp": "n. 容貌；产品特点，特征；嘴脸; v. 是…的特色，使突出<br>"
+        },
+        {
+          "word": "outlines",
+          "exp": "n. 轮廓；大概描述；概要; v. 画…的轮廓；概括<br>"
+        },
+        {
+          "word": "obtain",
+          "exp": "vi. 获得；流行; vt. 获得<br><br>时 态:   obtained, obtaining, obtains  <br>形容词:   obtainable <br>"
+        },
+        {
+          "word": "variety",
+          "exp": "n. 品种, 种类; 种种, 各种; 变化, 多样化"
+        },
+        {
+          "word": "properly",
+          "exp": "adv. 适当地；正确地；恰当地"
+        },
+        {
+          "word": "explicitly",
+          "exp": "adv. 明白地,明确地"
+        },
+        {
+          "word": "advantage",
+          "exp": "n. 有利条件, 有利因素, 优势; 益处, 利益<br>时 态:   advantaged, advantaging, advantages  <br>"
+        },
+        {
+          "word": "traditionally",
+          "exp": "adv. 传统上,传说上"
+        },
+        {
+          "word": "profound",
+          "exp": "adj. 深度的；深切的；深远的; 知识渊博的，见解深刻的，深奥的<br>比较级:   profounder，profoundest  <br>副 词:   profoundly <br>"
+        },
+        {
+          "word": "reviewed",
+          "exp": "v. 评估；复习；评论；检讨"
+        },
+        {
+          "word": "address",
+          "exp": "v. 写姓名地址；致函; 演说；演讲; 称呼；冠以; 设法解决；处理；对付; 向…说话; n. 地址；住址；通信处;  网址；电子邮件地址;  演讲，演说;  称呼;  地址<br>时 态:  ..."
+        },
+        {
+          "word": "typically",
+          "exp": "adv. 代表性地;作为特色地;典型地"
+        },
+        {
+          "word": "relational",
+          "exp": "adj. 亲属的,相关的,有关的"
+        },
+        {
+          "word": "queues",
+          "exp": "n. 队列；行列; v. 排队<br>"
+        },
+        {
+          "word": "cumbersome",
+          "exp": "adj. 沉重的, 笨重的, 转动不灵的"
+        },
+        {
+          "word": "be sourced from",
+          "exp": ""
+        },
+        {
+          "word": "potential",
+          "exp": "adj. 潜在的, 有可能的<br>n. 潜力；电位；电势；可能性副 词:   potentially <br>"
+        },
+        {
+          "word": "previously",
+          "exp": "adv. 事先;以前; 仓促地;不成熟地"
+        },
+        {
+          "word": "preferred",
+          "exp": "adj. 首选的"
+        },
+        {
+          "word": "distinguished",
+          "exp": "adj. 卓越的;著名的;受人尊敬的"
+        },
+        {
+          "word": "necessitate",
+          "exp": "vt. 使…成为必要, 需要；迫使时 态:   necessitated, necessitating, necessitates  <br>名 词:   necessitation <br>形容词..."
+        },
+        {
+          "word": "significant",
+          "exp": "adj. 重要的, 重大的, 可观的; 有意义的, 有用意的; 意味深长的<br>副 词:   significantly <br>"
+        },
+        {
+          "word": "downside",
+          "exp": "adj. 下降趋势的"
+        },
+        {
+          "word": "tied",
+          "exp": "adj. 出租的，供雇工租住的; v. 打结；系，缚，捆，扎；约束；打成平局，不分胜负<br> "
+        },
+        {
+          "word": "associated",
+          "exp": "adj. 联合的,关联的"
+        },
+        {
+          "word": "correctness",
+          "exp": "正确性"
+        },
+        {
+          "word": "invasive",
+          "exp": "adj. 有扩散危害的; 扩散性的; 蔓延性的名 词:   invasiveness <br>"
+        },
+        {
+          "word": "specific",
+          "exp": "adj. 特殊的，特定的；明确的；详细的；具有特效的; n. 特效药；细节；特性<br><br>副 词:   specifically <br>名 词:   specificity <br>"
+        },
+        {
+          "word": "recommend",
+          "exp": "vt. 推荐, 介绍, 赞许某人; 劝告, 建议; 使…显得可取<br>时 态:   recommended, recommending, recommends  <br>形容词:   recomm..."
+        },
+        {
+          "word": "infrastructure",
+          "exp": "n. 基础设施; 基础结构"
+        },
+        {
+          "word": "underlying",
+          "exp": "adj. 根本的, 基础的; 含蓄的, 潜在的"
+        },
+        {
+          "word": "related",
+          "exp": "adj. 讲述的，叙述的；有关系的，有关联的; v. 叙述<br>"
+        },
+        {
+          "word": "scalable",
+          "exp": "adj. 可攀登的；可去鳞的；可称量的"
+        },
+        {
+          "word": "capability",
+          "exp": "n. 能做某事的素质;能力; 尚未发挥的天资或素质"
+        },
+        {
+          "word": "scale",
+          "exp": "n. 刻度；比例；数值范围；天平；规模；鳞; vi. 攀登；衡量；生水垢；剥落; vt. 攀登；测量；刮鳞；依比例决定<br><br>时 态:   scaled, scaling, scales  ..."
+        },
+        {
+          "word": "alternative",
+          "exp": "adj. 可供选择的, 可供替代的; 不寻常的, 非传统性的; 非正统的; n. 可供选择的事物；可供选择的解决办法; 替代物<br>副 词:   alternatively <br>"
+        },
+        {
+          "word": "notion",
+          "exp": "n. 概念；见解；打算"
+        },
+        {
+          "word": "imperative",
+          "exp": "adj. 必要的, 紧急的, 极重要的; 命令的; 祈使的; n. 必要的事, 必须完成的事; 祈使语气<br>副 词:   imperatively <br>"
+        },
+        {
+          "word": "primarily",
+          "exp": "adv. 主要地，首要地；本来; 首先"
+        },
+        {
+          "word": "implement",
+          "exp": "vt. 使生效, 贯彻, 执行; n. 工具, 器具, 用具<br>时 态:   implemented, implementing, implements   <br>名 词:   impleme..."
+        },
+        {
+          "word": "benefit",
+          "exp": "vt. & vi. 有益于, 得益; n. 益处, 好处; 救济金, 保险金<br>时 态:   benefited also benefitted benefiting benefitting..."
+        },
+        {
+          "word": "worthwhile",
+          "exp": "adj. 值得的, 值钱的, 有价值的"
+        },
+        {
+          "word": "philosophy",
+          "exp": "n. 哲学; 人生哲学, 人生观; 达观"
+        },
+        {
+          "word": "failure",
+          "exp": "n. 失败；故障；失败者；破产"
+        },
+        {
+          "word": "invariably",
+          "exp": "adv. 始终不变地; 总是"
+        },
+        {
+          "word": "fatal",
+          "exp": "adj. 致命的; 灾难性的; 重大的, 决定性的"
+        },
+        {
+          "word": "recover",
+          "exp": "vt. 恢复；重新获得；弥补; vi. 恢复；胜诉；重新得球; n. 还原至预备姿势<br><br>时 态:   recovered, recovering, recovers  <br>形容词:   ..."
+        },
+        {
+          "word": "salient",
+          "exp": "adj. 显著的,重要的,主要的; 凸出的; n. 凸角; 进攻或防卫阵地的突出部分"
+        },
+        {
+          "word": "represent",
+          "exp": "vt. 表现, 描绘; 代表, 象征, 表示; 作为…的代表<br>时 态:   represented, representing, represents  <br>名 词:   represen..."
+        },
+        {
+          "word": "specify",
+          "exp": "vt. 指定；列举；详细说明；把…列入说明书<br>时 态:   specified, specifying, specifies  <br>名 词:   specifier <br>"
+        },
+        {
+          "word": "propagation",
+          "exp": "n. 繁殖;增殖; 宣传;波及; 遗传"
+        },
+        {
+          "word": "concepts",
+          "exp": "n. 概念，观念；思想"
+        },
+        {
+          "word": "refer",
+          "exp": "vi. 提到；针对；关系到; vt. 送交；提交; 归于; vt. & vi. 参考；查阅<br>时 态:   referred，referring，refers  <br>形容词:   refer..."
+        },
+        {
+          "word": "essential",
+          "exp": "adj. 基本的；必要的；本质的；精华的<br>n. 本质；要素；要点；必需品<br>名 词:   essentiality <br>副 词:   essentially <br>"
+        },
+        {
+          "word": "regardless",
+          "exp": "adv. 不顾后果地; 不管怎样, 无论如何<br>副 词:   regardlessly <br>名 词:   regardlessness <br>"
+        },
+        {
+          "word": "opt",
+          "exp": "vi. 选择<br><br>OPTabbr. VC开发环境自动生成的用来存放WorkSpace中各种选项的文件。时 态:   opted, opting, opts  <br>"
+        },
+        {
+          "word": "enlist",
+          "exp": "vi. 从军；应募；赞助；支持; vt. 征募；使入伍；谋取…的赞助或帮助<br><br>时 态:   enlisted, enlisting, enlists  <br>名 词:   enlistme..."
+        },
+        {
+          "word": "approach",
+          "exp": "vt. & vi. 接近，走近，靠近; vt. 接洽，交涉；着手处理; n. 靠近，接近，临近; 通路，入口，途径; 方式，方法<br>时 态:   approached，approaching..."
+        },
+        {
+          "word": "persistence",
+          "exp": "n. 坚持不懈;执意;持续;留存; 继续存在"
+        },
+        {
+          "word": "relevant",
+          "exp": "adj. 有关的, 切题的副 词:   relevantly <br>"
+        },
+        {
+          "word": "triggered",
+          "exp": "adj. 触发的"
+        },
+        {
+          "word": "boilerplate",
+          "exp": "n. 样板文件"
+        },
+        {
+          "word": "fashion",
+          "exp": "n. 样式；时尚；时装；时髦人物; vt. 做成…的形状；使用；改变<br><br>时 态:   fashioned, fashioning, fashions  <br>名 词:   fashioner <br>"
+        },
+        {
+          "word": "individual",
+          "exp": "adj. 个别的, 单独的, 个人的; 独特的; n. 个人; 人<br>副 词:   individually <br>"
+        },
+        {
+          "word": "customize",
+          "exp": "vt. 定制,定做时 态:   customized, customizing, customizes  <br>名 词:   customization <br>"
+        },
+        {
+          "word": "custom",
+          "exp": "n. 风俗；习惯；海关; adj. 定制的，定做的<br>"
+        },
+        {
+          "word": "arbitrary",
+          "exp": "adj. 随意的, 主观的; 专横的, 独断专行的<br>副 词:   arbitrarily <br>名 词:   arbitrariness <br>"
+        },
+        {
+          "word": "subsequent",
+          "exp": "adj. 随后的, 继…之后的副 词:   subsequently <br>"
+        },
+        {
+          "word": "distribution",
+          "exp": "n. 分发, 分配; 散布, 分布"
+        },
+        {
+          "word": "implementation",
+          "exp": "n. 贯彻，执行"
+        },
+        {
+          "word": "sufficient",
+          "exp": "adj. 足够的; 充足的副 词:   sufficiently <br>"
+        },
+        {
+          "word": "merely",
+          "exp": "adv. 仅仅，只不过；只是"
+        },
+        {
+          "word": "grasp",
+          "exp": "n. 理解；控制；抓住; vt. 抓住；领会; vi. 抓<br><br>时 态:   grasped, grasping, grasps  <br>"
+        },
+        {
+          "word": "regard",
+          "exp": "n. 注意；尊重；凝视；问候; vt. 把…看作；注重，考虑；看待；尊敬；与…有关; vi. 注意，注重；注视<br><br>时 态:   regarded, regarding, regards  <br>"
+        },
+        {
+          "word": "yield",
+          "exp": "vt. 出产；屈服；放弃; vi. 屈服，投降; n. 收益；产量<br><br>时 态:   yielded, yielding, yields  <br>名 词:   yielder <br>"
+        },
+        {
+          "word": "conjunction",
+          "exp": "n. 连词; 结合; 联合<br>形容词:   conjunctional <br>"
+        },
+        {
+          "word": "appropriate",
+          "exp": "adj. 适当的，恰当的; vt. 挪用；占用；盗用; 拨出<br>时 态:   appropriated，appropriating，appropriates   <br>副 词:   appro..."
+        },
+        {
+          "word": "impact",
+          "exp": "vt. 撞击；冲突；影响；压紧; vi. 冲击；产生影响; n. 效果；影响；碰撞；冲击力<br><br><br>IMPACTabbr. Implementation Planning and Cont..."
+        },
+        {
+          "word": "attendant",
+          "exp": "n. 服务人员, 侍者, 随从; 伴随物; adj. 伴随的, 随之而产生的; 护理的"
+        },
+        {
+          "word": "purposes",
+          "exp": "n. 目的；意志; v. 企图；打算<br>"
+        },
+        {
+          "word": "preceding",
+          "exp": "adj. 在先的, 在前的, 前面的"
+        },
+        {
+          "word": "semantics",
+          "exp": "n. 语义学"
+        },
+        {
+          "word": "examine",
+          "exp": "vt. 仔细检查; 考试, 对…进行考核; 审查, 审问<br>时 态:   examined, examining, examines  <br>形容词:   examinable <br>名 词: ..."
+        },
+        {
+          "word": "transitive",
+          "exp": "adj. 及物的; 过渡的；转变的; 可递的，可迁的; n. 及物动词<br>副 词:   transitively <br>"
+        },
+        {
+          "word": "vulnerable",
+          "exp": "adj. 易受伤的, 脆弱的, 敏感的"
+        },
+        {
+          "word": "encapsulate",
+          "exp": "vt. 装入胶囊; 总结；扼要概括；囊括; adj. 有囊包着的<br>时 态:   encapsulated，encapsulating，encapsulates  <br>名 词:   enca..."
+        },
+        {
+          "word": "omit",
+          "exp": "vt. 省略，遗漏；删掉; 忘记做<br>时 态:   omitted，omitting，omits  <br>"
+        },
+        {
+          "word": "wire",
+          "exp": "n. 金属丝；电线；电报; vt. 拍电报；给…装电线; vi. 打电报<br><br>时 态:   wired, wiring, wires  <br>形容词:   wirable <br>"
+        },
+        {
+          "word": "indicate",
+          "exp": "vt. 标示，指示，指出; 象征；表明或暗示…的可能性<br>时 态:   indicated，indicating，indicates  <br>形容词:   indicatory <br>"
+        },
+        {
+          "word": "entire",
+          "exp": "adj. 全部的，整个的；全体的<br>名 词:   entireness <br>"
+        }
+      ],
+      "message": ""
+    },
+    "cookies": {}
+  },
+  {
+    "headers": {
+      "Authorization": "Bearer 2941df5f80f92f9c3a5256d5762b3c30a0eb82256f269e82c1ff15a203b55096",
+      "Accept": "application/json"
+    },
+    "method": "POST",
+    "attributes": {
+      "org.springframework.web.reactive.function.client.WebClient.uriTemplate": "https://open.maimemo.com/open/api/v1/notepads/{id}",
+      "org.springframework.web.reactive.function.client.ClientRequest.LOG_ID": "1a3fbc9f"
+    },
+    "url": "https://open.maimemo.com/open/api/v1/notepads/np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5",
+    "cookies": {}
+  },
+  {
+    "headers": "[x-powered-by:\"Express\", x-ratelimit-limit-medium:\"5\", x-ratelimit-remaining-medium:\"4\", x-ratelimit-reset-medium:\"10\", x-ratelimit-limit-long:\"20\", x-ratelimit-remaining-long:\"19\", x-ratelimit-reset-long:\"60\", content-type:\"application/json; charset=utf-8\", content-length:\"296\", etag:\"W/\"128-fra3uBSJra/gmFWtmxZjERMrCok\"\", date:\"Wed, 25 Sep 2024 06:14:41 GMT\", x-envoy-upstream-service-time:\"253\", vary:\"Accept-Encoding\", server:\"istio-envoy\"]",
+    "from-request": "POST https://open.maimemo.com/open/api/v1/notepads/np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5",
+    "body": {
+      "errors": [],
+      "data": {
+        "notepad": {
+          "id": "np-IsHf3gI3ImsxHH8w4EdnDtRgpnH6AcjscHDtLREfZirFWGU7xXoKAG29E6qt4Op5",
+          "type": "NOTEPAD",
+          "status": "UNPUBLISHED",
+          "title": "Code",
+          "brief": "Code",
+          "tags": [
+            "其他"
+          ],
+          "created_time": "2024-09-24T11:05:56.269Z",
+          "updated_time": "2024-09-24T12:45:04.975Z"
+        }
+      },
+      "success": true
+    },
+    "cookies": {}
+  }
+]

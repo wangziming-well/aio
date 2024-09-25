@@ -1,1 +1,1 @@
-application.yml filter=git-crypt diff=git-crypt
+token.properties filter=git-crypt diff=git-crypt
