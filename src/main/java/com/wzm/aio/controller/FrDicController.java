@@ -1,6 +1,7 @@
 package com.wzm.aio.controller;
 
 import com.wzm.aio.api.frdic.FrWord;
+import com.wzm.aio.api.frdic.FrWordsBook;
 import com.wzm.aio.pojo.vo.AddWordsResultVO;
 import com.wzm.aio.pojo.vo.Response;
 import com.wzm.aio.service.FrDicService;
@@ -48,6 +49,13 @@ public class FrDicController {
                 .sorted()
                 .toList();
 
+    }
+
+    @GetMapping("/test")
+    public Response<Void> test(){
+        List<FrWordsBook> allWordsBook = frDicService.getAllWordsBook();
+        System.out.println(allWordsBook);
+        return Response.ok();
     }
 
 

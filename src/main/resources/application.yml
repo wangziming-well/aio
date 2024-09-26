@@ -41,7 +41,7 @@ open-api:
   fr-dic:
     base-url: https://api.frdic.com/api/open/v1/studylist
     headers:
-      Authorization: ${token.token.dr-dic}
+      Authorization: ${token.dr-dic}
   openai:
     token: ${token.openai}
     proxy-host: localhost
@@ -64,8 +64,8 @@ springdoc:
     path: /swagger.html
 project:
   init:
-    momo-pull: true
-    fr-sync: true
+    momo-pull: false
+    fr-sync: false
   closed:
     momo-push: false
 serialized:

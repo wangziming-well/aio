@@ -14,6 +14,7 @@ import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.common.OpenAiApiConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.util.MultiValueMap;
@@ -34,7 +35,9 @@ public class OpenApiConfiguration {
     public OpenApiConfiguration(OpenApiProperties properties) {
         this.properties = properties;
     }
+    //todo 研究为WebClient复用创建api时报错的问题
     @Bean
+    @Scope("prototype")
     public WebClient.Builder webClientBuilder() {
         int maxMemorySize = properties.getMaxMemorySize();
         int timeOut = properties.getTimeOut();

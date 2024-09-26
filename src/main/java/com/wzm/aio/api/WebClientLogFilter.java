@@ -41,7 +41,10 @@ public class WebClientLogFilter {
                 Map<String, Object> logMap = getResponseLogMap(response);
                 return response.bodyToMono(String.class)
                         .flatMap(body -> {
-                            logMap.put(BODY, JacksonUtils.parseToMap(body));
+                            if (response.statusCode().is2xxSuccessful())
+                                logMap.put(BODY, JacksonUtils.parseToMap(body));
+                            else
+                                logMap.put(BODY, body);
                             logger.debug(RESPONSE_LOG_PREFIX + JacksonUtils.toJsonString(logMap));
                             return Mono.just(response.mutate().body(body).build()); // 使用 response.mutate() 来克隆响应，保持原始响应体
                         }).onErrorResume(e -> {
