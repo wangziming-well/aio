@@ -64,8 +64,8 @@ springdoc:
     path: /swagger.html
 project:
   init:
-    momo-pull: false
-    fr-sync: false
+    momo-pull: true
+    fr-sync: true
   closed:
     momo-push: false
 serialized:

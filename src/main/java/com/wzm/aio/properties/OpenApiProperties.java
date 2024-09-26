@@ -1,6 +1,7 @@
 package com.wzm.aio.properties;
 
 import lombok.Data;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.MultiValueMap;
 
@@ -42,6 +43,14 @@ public class OpenApiProperties {
         private String model;
         private double temperature;
         private int maxTokens;
+
+        public OpenAiChatOptions toOpenAiChatOptions(){
+            return OpenAiChatOptions.builder()
+                    .withModel(this.model)
+                    .withTemperature(this.temperature)
+                    .withMaxTokens(this.maxTokens)
+                    .build();
+        }
     }
 
 

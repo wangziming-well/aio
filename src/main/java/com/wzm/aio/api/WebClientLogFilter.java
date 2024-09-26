@@ -10,10 +10,10 @@ import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+// todo 需要重构
+public class WebClientLogFilter {
 
-public class ApiFilter {
-
-    private static final Log logger = LogFactory.getLog(ApiFilter.class);
+    private static final Log logger = LogFactory.getLog(WebClientLogFilter.class);
     private static final String METHOD = "method";
     private static final String URL = "url";
     private static final String BODY = "body";

@@ -1,5 +1,6 @@
 package com.wzm.aio.api;
 
+import com.wzm.aio.RestClientBuilderHolder;
 import com.wzm.aio.api.frdic.FrDicOpenApi;
 import com.wzm.aio.api.local.LocalOpenApi;
 import com.wzm.aio.api.momo.MomoOpenApi;
@@ -9,7 +10,6 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
 import org.apache.hc.core5.http.HttpHost;
 import org.springframework.ai.openai.OpenAiChatModel;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
 import org.springframework.ai.openai.api.common.OpenAiApiConstants;
 import org.springframework.context.annotation.Bean;
@@ -34,20 +34,32 @@ public class OpenApiConfiguration {
     public OpenApiConfiguration(OpenApiProperties properties) {
         this.properties = properties;
     }
-
-    public WebClient.Builder createWebClientBuilder() {
+    @Bean
+    public WebClient.Builder webClientBuilder() {
         int maxMemorySize = properties.getMaxMemorySize();
         int timeOut = properties.getTimeOut();
         boolean enableLog = properties.isEnableLog();
         WebClient.Builder builder = WebClient.builder()
-                .codecs(configurer
-                        -> configurer.defaultCodecs()
+                .codecs(configurer -> configurer.defaultCodecs()
                         .maxInMemorySize(maxMemorySize * 1024 * 1024))
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.create()
                         .responseTimeout(Duration.ofSeconds(timeOut))));
         if (enableLog)
-            builder.filter(ApiFilter.logFilter());
+            builder.filter(WebClientLogFilter.logFilter());
         return builder;
+    }
+    @Bean
+    public RestClient.Builder restClientBuilder(RestClientBuilderHolder restClientBuilderHolder) {
+        return restClientBuilderHolder.get();
+    }
+
+    @Bean
+    public RestClientBuilderHolder restClientBuilderHolder(){
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(properties.getTimeOut()));
+        RestClient.Builder builder = RestClient.builder();
+        builder.requestInterceptor(new RestClientLogFilter());
+        return new RestClientBuilderHolder(builder,factory);
     }
 
 
@@ -57,72 +69,59 @@ public class OpenApiConfiguration {
         return factory.createClient(clazz);
     }
 
-    private <T> T createOpenApiClient( String baseUrl, MultiValueMap<String,String> headers, Class<T> apiClass) {
-        WebClient webClient = createWebClientBuilder().baseUrl(baseUrl).defaultHeaders(defaultHeaders -> defaultHeaders.addAll(headers)).build();
-        return createClient(webClient, apiClass);
-    }
-
-    private <T> T createOpenApiClient(String baseUrl, Class<T> apiClass) {
-        WebClient webClient = createWebClientBuilder().baseUrl(baseUrl).build();
+    private <T> T createOpenApiClient(WebClient.Builder webClientBuilder, String baseUrl, MultiValueMap<String,String> headers, Class<T> apiClass) {
+        if (headers != null)
+            webClientBuilder.defaultHeaders(defaultHeaders -> defaultHeaders.addAll(headers));
+        WebClient webClient = webClientBuilder.baseUrl(baseUrl).build();
         return createClient(webClient, apiClass);
     }
 
     @Bean
-    public MomoOpenApi momoOpenApi() {
+    public MomoOpenApi momoOpenApi(WebClient.Builder webClientBuilder) {
         OpenApiProperties.Momo momo = properties.getMomo();
-        return createOpenApiClient(momo.getBaseUrl(),momo.getHeaders(), MomoOpenApi.class);
+        return createOpenApiClient(webClientBuilder,momo.getBaseUrl(),momo.getHeaders(), MomoOpenApi.class);
     }
     @Bean
-    public FrDicOpenApi frDicOpenApi() {
+    public FrDicOpenApi frDicOpenApi(WebClient.Builder webClientBuilder) {
         OpenApiProperties.FrDic frDic = properties.getFrDic();
-        return createOpenApiClient(frDic.getBaseUrl(),frDic.getHeaders(), FrDicOpenApi.class);
+        return createOpenApiClient(webClientBuilder,frDic.getBaseUrl(),frDic.getHeaders(), FrDicOpenApi.class);
     }
 
     @Bean
-    public LocalOpenApi localOpenApi() {
-        return createOpenApiClient(properties.getLocalBaseUrl(), LocalOpenApi.class);
+    public LocalOpenApi localOpenApi(WebClient.Builder webClientBuilder) {
+        return createOpenApiClient(webClientBuilder,properties.getLocalBaseUrl(),null, LocalOpenApi.class);
     }
 
 
     @Bean
-    public OpenAiChatModel openAiChatModel(WebClient.Builder webClientBuilder) {
-
+    public OpenAiChatModel openAiChatModel(WebClient.Builder webClientBuilder,RestClientBuilderHolder restClientBuilderHolder) {
         OpenApiProperties.Openai openai = properties.getOpenai();
         String proxyHost = openai.getProxyHost();
         int proxyPort = openai.getProxyPort();
 
-        webClientBuilder = setProxy(webClientBuilder, proxyHost, proxyPort);
-        RestClient.Builder restClientBuilder = restClientBuilder(proxyHost, proxyPort);
-        OpenAiApi openAiApi = new OpenAiApi(OpenAiApiConstants.DEFAULT_BASE_URL, openai.getToken(), restClientBuilder, webClientBuilder);
-        return new OpenAiChatModel(openAiApi, from(openai));
+        setProxy(webClientBuilder, proxyHost, proxyPort);
+        setProxy(restClientBuilderHolder,proxyHost, proxyPort);
+        OpenAiApi openAiApi = new OpenAiApi(OpenAiApiConstants.DEFAULT_BASE_URL, openai.getToken(), restClientBuilderHolder.get(), webClientBuilder);
+        return new OpenAiChatModel(openAiApi, openai.toOpenAiChatOptions());
     }
 
-    private OpenAiChatOptions from(OpenApiProperties.Openai openai) {
-        return OpenAiChatOptions.builder()
-                .withModel(openai.getModel())
-                .withTemperature(openai.getTemperature())
-                .withMaxTokens(openai.getMaxTokens())
-                .build();
-    }
 
-    private RestClient.Builder restClientBuilder(String proxyHost, int proxyPort) {
+    private void setProxy(RestClientBuilderHolder restClientBuilderHolder,String proxyHost, int proxyPort) {
+        HttpComponentsClientHttpRequestFactory requestFactory = restClientBuilderHolder.getAssociatedFactory();
+
         HttpHost proxy = new HttpHost(proxyHost, proxyPort);
         DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
         CloseableHttpClient closeableHttpClient = HttpClients.custom()
                 .setRoutePlanner(routePlanner)
                 .build();
-        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(closeableHttpClient);
-        factory.setConnectTimeout(Duration.ofSeconds(properties.getTimeOut()));
-        return RestClient.builder().requestFactory(factory);
+        requestFactory.setHttpClient(closeableHttpClient);
     }
 
-    private WebClient.Builder setProxy(WebClient.Builder webClientBuilder, String proxyHost, int proxyPort) {
+    private void setProxy(WebClient.Builder webClientBuilder, String proxyHost, int proxyPort) {
         HttpClient httpClient = HttpClient.create()
-                .proxy(proxy -> proxy
-                        .type(ProxyProvider.Proxy.HTTP)
-                        .host(proxyHost)
-                        .port(proxyPort));
-        return webClientBuilder.clientConnector(new ReactorClientHttpConnector(httpClient));
+                .proxy(proxy -> proxy.type(ProxyProvider.Proxy.HTTP)
+                        .host(proxyHost).port(proxyPort));
+        webClientBuilder.clientConnector(new ReactorClientHttpConnector(httpClient));
     }
 
 }
