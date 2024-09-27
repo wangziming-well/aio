@@ -1,4 +1,4 @@
-package com.wzm.aio;
+package com.wzm.aio.api;
 
 
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;

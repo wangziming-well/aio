@@ -1,6 +1,5 @@
 package com.wzm.aio.api;
 
-import com.wzm.aio.RestClientBuilderHolder;
 import com.wzm.aio.api.frdic.FrDicOpenApi;
 import com.wzm.aio.api.local.LocalOpenApi;
 import com.wzm.aio.api.momo.MomoOpenApi;

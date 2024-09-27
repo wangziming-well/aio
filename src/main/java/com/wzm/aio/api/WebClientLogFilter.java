@@ -20,17 +20,11 @@ public class WebClientLogFilter {
     private static final String HEADERS = "headers";
     private static final String ATTRIBUTES = "attributes";
     private static final String COOKIES = "cookies";
-    private static final String FROM_REQUEST = "from-request";
     private static final String HTTP_ID = "http-id";
-
     private static final String RESPONSE_TIME = "response-time";
-
-
     private static final String REQUEST_LOG_PREFIX = "HTTP Request: ";
     private static final String RESPONSE_LOG_PREFIX = "HTTP Response: ";
-
     private static final ConcurrentHashMap<String, Long> requestMap = new ConcurrentHashMap<>();
-
 
     public static ExchangeFilterFunction logFilter() {
         return ExchangeFilterFunction.ofRequestProcessor(request -> {
@@ -54,7 +48,6 @@ public class WebClientLogFilter {
             } else {
                 return Mono.just(response);
             }
-
         }));
     }
 
@@ -107,7 +100,6 @@ public class WebClientLogFilter {
 
     private static Map<String, Object> responseMap(ClientResponse response) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put(FROM_REQUEST, response.request().getMethod() + " " + response.request().getURI());
         map.put(HEADERS, response.headers().asHttpHeaders().toSingleValueMap());
         map.put(COOKIES, response.cookies());
         return map;
