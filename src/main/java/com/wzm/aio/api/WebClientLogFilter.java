@@ -35,7 +35,7 @@ public class WebClientLogFilter {
                 Map<String, Object> logMap = getResponseLogMap(response);
                 return response.bodyToMono(String.class)
                         .flatMap(body -> {
-                            if (response.statusCode().is2xxSuccessful())
+                            if (response.statusCode().is2xxSuccessful() )
                                 logMap.put(BODY, JacksonUtils.parseToMap(body));
                             else
                                 logMap.put(BODY, body);

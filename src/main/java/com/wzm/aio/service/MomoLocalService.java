@@ -1,11 +1,11 @@
 package com.wzm.aio.service;
 
 import com.wzm.aio.pojo.model.MomoLocalNotepad;
-import com.wzm.aio.pojo.model.NotepadDictPair;
+import com.wzm.aio.pojo.model.VocabularyEntry;
 import com.wzm.aio.pojo.model.Word;
 import com.wzm.aio.mapper.DictionaryMapper;
 import com.wzm.aio.mapper.MomoNotepadMapper;
-import com.wzm.aio.mapper.NotepadDictMapper;
+import com.wzm.aio.mapper.VocabularyEntryMapper;
 import com.wzm.aio.properties.OpenApiProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +23,16 @@ public class MomoLocalService {
 
     private final MomoNotepadMapper momoNotepadMapper;
     private final DictionaryMapper dictionaryMapper;
-    private final NotepadDictMapper notepadDictMapper;
+    private final VocabularyEntryMapper vocabularyEntryMapper;
 
     private final OpenApiProperties properties;
 
     public MomoLocalService(MomoNotepadMapper momoNotepadMapper
-            , DictionaryMapper dictionaryMapper, NotepadDictMapper notepadDictMapper, OpenApiProperties properties) {
+            , DictionaryMapper dictionaryMapper, VocabularyEntryMapper vocabularyEntryMapper, OpenApiProperties properties) {
 
         this.momoNotepadMapper = momoNotepadMapper;
         this.dictionaryMapper = dictionaryMapper;
-        this.notepadDictMapper = notepadDictMapper;
+        this.vocabularyEntryMapper = vocabularyEntryMapper;
         this.properties = properties;
     }
 
@@ -40,16 +40,16 @@ public class MomoLocalService {
     //清空本地notepad:截断表momo_notepad,和notepad_dictionary表
     public void clearNotepad() {
         this.momoNotepadMapper.truncateTable();
-        this.notepadDictMapper.truncateTable();
+        this.vocabularyEntryMapper.truncateTable();
         this.dictionaryMapper.truncateTable();
     }
 
 
     private List<String> getWords(int notepadId) {
-        List<NotepadDictPair> notepadDictPairs = notepadDictMapper.selectByNotepadId(notepadId);
-        if (ObjectUtils.isEmpty(notepadDictPairs))
+        List<VocabularyEntry> notepadDictionaryEntries = vocabularyEntryMapper.selectByNotepadId(notepadId);
+        if (ObjectUtils.isEmpty(notepadDictionaryEntries))
             return Collections.emptyList();
-        return notepadDictPairs.stream()
+        return notepadDictionaryEntries.stream()
                 .map(pair ->
                         dictionaryMapper.selectById(pair.getDictId()).getWord())
                 .collect(Collectors.toList());
@@ -126,7 +126,7 @@ public class MomoLocalService {
         int count = momoNotepadMapper.deleteById(id);
         if (count == 0)
             return -1;
-        return notepadDictMapper.deleteByNotepadId(id);
+        return vocabularyEntryMapper.deleteByNotepadId(id);
     }
 
     public int deleteNotepad(String cloudId) {
@@ -161,8 +161,8 @@ public class MomoLocalService {
      */
 
     public Map<String,Boolean> addWordsToNotepad(int localId, List<String> words){
-        List<NotepadDictPair> notepadDictPairs = notepadDictMapper.selectByNotepadId(localId);
-        int[] currWordIds = notepadDictPairs.stream().mapToInt(NotepadDictPair::getDictId).toArray();
+        List<VocabularyEntry> notepadDictionaryEntries = vocabularyEntryMapper.selectByNotepadId(localId);
+        int[] currWordIds = notepadDictionaryEntries.stream().mapToInt(VocabularyEntry::getDictId).toArray();
         HashMap<String, Boolean> result = new HashMap<>();
         for (String word: words){
             int wordId = addGlobalWord(word);
@@ -179,9 +179,9 @@ public class MomoLocalService {
     }
 
     public void linkWordToNotepad(int localNotepadId,int wordId){
-        NotepadDictPair select = notepadDictMapper.select(localNotepadId, wordId);
+        VocabularyEntry select = vocabularyEntryMapper.select(localNotepadId, wordId);
         if (select != null)
             return;
-        notepadDictMapper.insert(localNotepadId,wordId);
+        vocabularyEntryMapper.insert(localNotepadId,wordId);
     }
 }

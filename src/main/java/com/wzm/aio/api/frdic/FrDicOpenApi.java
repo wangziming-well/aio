@@ -28,11 +28,7 @@ public interface FrDicOpenApi {
     FrDicResponse<List<FrWord>> getWords(@PathVariable("id") String wordsBookId,
                                          @RequestParam String language,
                                          @RequestParam Integer page,
-                                         @RequestParam Integer pageSize);
-
-    @GetExchange("/words/{id}")
-    FrDicResponse<List<FrWord>> getWords(@PathVariable("id") String wordsBookId,
-                                         @RequestParam Map<String, String> params);
+                                         @RequestParam("page_size") Integer pageSize);
 
     @PostExchange("/words")
     FrDicResponse<Void> addWords(@RequestBody FrWordsBook frWordsBook);

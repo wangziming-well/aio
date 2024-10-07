@@ -1,7 +1,7 @@
 package com.wzm.aio.service;
 
 
-import com.wzm.aio.pojo.model.MomoCloudNotepad;
+import com.wzm.aio.api.momo.model.Notepad;
 import com.wzm.aio.pojo.model.MomoLocalNotepad;
 import com.wzm.aio.pojo.dto.MomoNotepadDTO;
 import com.wzm.aio.util.ThreadUtils;
@@ -32,10 +32,10 @@ public class MomoService {
     //云端词库同步到本地
     public void pull() {
         logger.info("同步云端词库到本地开始");
-        List<MomoCloudNotepad> cloudNotepads = cloudService.getAllNotepads();
+        List<Notepad> cloudNotepads = cloudService.getAllNotepads();
         localService.clearNotepad();
         logger.info("清空本地notepad");
-        for (MomoCloudNotepad cloudNotepad : cloudNotepads) {
+        for (Notepad cloudNotepad : cloudNotepads) {
             MomoLocalNotepad local = cloudNotepad.toLocal();
             if (!StringUtils.hasText(local.getTags()))
                 local.setTags("其他");
@@ -50,9 +50,9 @@ public class MomoService {
     public void push() {
         logger.info("本地notepad同步云端开始");
         List<MomoLocalNotepad> localNotepads = localService.getAllNotepads();
-        List<MomoCloudNotepad> cloudNotepads = cloudService.getAllNotepads();
+        List<Notepad> cloudNotepads = cloudService.getAllNotepads();
 
-        for (MomoCloudNotepad cloudNotepad : cloudNotepads) {
+        for (Notepad cloudNotepad : cloudNotepads) {
             String cloudId = cloudNotepad.getId();
             boolean shouldDelete = true;
             for (MomoLocalNotepad localNotepad : localNotepads) {
@@ -72,7 +72,7 @@ public class MomoService {
             String cloudId = localNotepad.getCloudId();
             //判断当前本地notepad是否在云端存在
             boolean cloudExist = false;
-            for (MomoCloudNotepad cloudNotepad : cloudNotepads) {
+            for (Notepad cloudNotepad : cloudNotepads) {
                 if (Objects.equals(cloudNotepad.getId(), cloudId)) {
                     cloudExist = true;
                     //如果云端存在当前notepad，且本地和云端存在不一致，则将更新云端notepad
@@ -98,7 +98,7 @@ public class MomoService {
         logger.info("本地notepad同步云端完成");
     }
 
-    private boolean isDiffer(MomoCloudNotepad cloud, MomoLocalNotepad local) {
+    private boolean isDiffer(Notepad cloud, MomoLocalNotepad local) {
         if (!Objects.equals(cloud.getTitle(), local.getTitle()))
             return true;
         if (!Objects.equals(cloud.getBrief(), local.getBrief()))
@@ -124,7 +124,7 @@ public class MomoService {
     }
 
     public void addNotepad(MomoNotepadDTO notepadDTO) {
-        MomoCloudNotepad cloudNotepad = notepadDTO.toCloud();
+        Notepad cloudNotepad = notepadDTO.toCloud();
         cloudNotepad = cloudService.createNotepad(cloudNotepad);
         MomoLocalNotepad localNotepad = cloudNotepad.toLocal();
         localService.addNotepad(localNotepad);
@@ -132,8 +132,8 @@ public class MomoService {
 
     public void updateNotepad(MomoNotepadDTO notepadDTO) {
         MomoLocalNotepad localNotepad = notepadDTO.toLocal();
-        MomoCloudNotepad cloudNotepad = localNotepad.toCloud();
-        MomoCloudNotepad updatedCloudNotepad = cloudService.updateNotepad(cloudNotepad);
+        Notepad cloudNotepad = localNotepad.toCloud();
+        Notepad updatedCloudNotepad = cloudService.updateNotepad(cloudNotepad);
         localService.updateNotepad(updatedCloudNotepad.toLocal());
     }
     //向notepad中添加单词，会同步到云端

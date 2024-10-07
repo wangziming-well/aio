@@ -34,7 +34,7 @@ open-api:
   enable-log : true
 
   momo:
-    base-url: https://open.maimemo.com/open/api/v1/notepads
+    base-url: https://open.maimemo.com/open/api/v1
     headers:
       Authorization: "Bearer ${token.momo}"
     notepad-max-count: 7
@@ -64,8 +64,8 @@ springdoc:
     path: /swagger.html
 project:
   init:
-    momo-pull: false
-    fr-sync: false
+    momo-pull: true
+    fr-sync: true
   closed:
     momo-push: false
 serialized:
