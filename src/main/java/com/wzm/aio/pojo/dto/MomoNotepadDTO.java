@@ -1,7 +1,7 @@
 package com.wzm.aio.pojo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wzm.aio.pojo.model.MomoCloudNotepad;
+import com.wzm.aio.api.momo.model.Notepad;
 import com.wzm.aio.config.AutoMapperConfiguration;
 import com.wzm.aio.pojo.model.MomoLocalNotepad;
 import com.wzm.aio.util.BeanUtils;
@@ -15,11 +15,11 @@ import java.util.List;
 
 @Data
 
-@AutoMappers({@AutoMapper(target = MomoCloudNotepad.class,
+@AutoMappers({@AutoMapper(target = Notepad.class,
         uses = AutoMapperConfiguration.StringListConverter.class),
         @AutoMapper(target = MomoLocalNotepad.class)})
 public class MomoNotepadDTO {
-    @AutoMapping(targetClass =MomoCloudNotepad.class ,target = "id",ignore = true)
+    @AutoMapping(targetClass = Notepad.class ,target = "id",ignore = true)
     private int id;
     private String cloudId;
     private String type;
@@ -31,15 +31,15 @@ public class MomoNotepadDTO {
     private OffsetDateTime createdTime;
     @JsonProperty("updated_time")
     private OffsetDateTime updatedTime;
-    @AutoMapping(targetClass = MomoCloudNotepad.class,target = "content")
+    @AutoMapping(targetClass = Notepad.class,target = "content")
     List<String> words;
 
     public MomoLocalNotepad toLocal(){
         return BeanUtils.convert(this, MomoLocalNotepad.class);
     }
 
-    public MomoCloudNotepad toCloud(){
-        MomoCloudNotepad convert = BeanUtils.convert(this, MomoCloudNotepad.class);
+    public Notepad toCloud(){
+        Notepad convert = BeanUtils.convert(this, Notepad.class);
         convert.setId(this.cloudId);
         return convert;
     }

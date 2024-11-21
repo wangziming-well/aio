@@ -25,7 +25,8 @@ public class FrDicService {
     }
 
     public List<FrWord> getAllWords(String wordsBookId, String language) {
-        FrDicResponse<List<FrWord>> response = api.getWords(wordsBookId, language, 0, Integer.MAX_VALUE);
+
+        FrDicResponse<List<FrWord>> response = api.getWords(wordsBookId, language, 0,Integer.MAX_VALUE);
         return response.getData();
     }
 

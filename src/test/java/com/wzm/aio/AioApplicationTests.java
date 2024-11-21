@@ -29,6 +29,7 @@ class AioApplicationTests {
     @Test
     void contextLoads() {
         List<FrWord> allWords = service.getAllWords("0");
+        System.out.println(allWords.size());
         System.out.println(allWords);
 
     }

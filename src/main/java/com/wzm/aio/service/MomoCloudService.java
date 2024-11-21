@@ -2,9 +2,9 @@ package com.wzm.aio.service;
 
 import com.wzm.aio.api.momo.MomoOpenApi;
 import com.wzm.aio.api.momo.MomoResponse;
-import com.wzm.aio.pojo.model.MomoCloudNotepad;
-import com.wzm.aio.api.momo.NotepadList;
-import com.wzm.aio.api.momo.OneNotepad;
+import com.wzm.aio.api.momo.model.Notepad;
+import com.wzm.aio.api.momo.dto.NotepadsDTO;
+import com.wzm.aio.api.momo.dto.NotepadDTO;
 import com.wzm.aio.util.ThreadUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -29,21 +29,21 @@ public class MomoCloudService {
             throw new RuntimeException("响应失败:" + response);
     }
 
-    private void checkRequired(MomoCloudNotepad momoCloudNotepad) {
-        Assert.notNull(momoCloudNotepad.getTitle(), "title不能为空");
-        Assert.notNull(momoCloudNotepad.getContent(), "content不能为空");
-        Assert.notNull(momoCloudNotepad.getStatus(), "status不能为空");
-        Assert.notNull(momoCloudNotepad.getBrief(), "brief不能为空");
-        Assert.notNull(momoCloudNotepad.getTags(), "tags不能为空");
+    private void checkRequired(Notepad notepad) {
+        Assert.notNull(notepad.getTitle(), "title不能为空");
+        Assert.notNull(notepad.getContent(), "content不能为空");
+        Assert.notNull(notepad.getStatus(), "status不能为空");
+        Assert.notNull(notepad.getBrief(), "brief不能为空");
+        Assert.notNull(notepad.getTags(), "tags不能为空");
     }
 
 
     //获取当前用户的所有notepad,的完整信息
-    public List<MomoCloudNotepad> getAllNotepads() {
-        MomoResponse<NotepadList> response = momoOpenApi.getAllNotepads();
-        List<MomoCloudNotepad> notepads = response.getData().getNotepads();
-        ArrayList<MomoCloudNotepad> result = new ArrayList<>();
-        for (MomoCloudNotepad notepad : notepads) {
+    public List<Notepad> getAllNotepads() {
+        MomoResponse<NotepadsDTO> response = momoOpenApi.getAllNotepads();
+        List<Notepad> notepads = response.getData().getNotepads();
+        ArrayList<Notepad> result = new ArrayList<>();
+        for (Notepad notepad : notepads) {
             ThreadUtils.sleep(1500);
             result.add(getNotepad(notepad.getId()));
         }
@@ -64,18 +64,18 @@ public class MomoCloudService {
     }
 
     public void deleteAllNotepad() {
-        MomoResponse<NotepadList> response = momoOpenApi.getAllNotepads();
-        List<MomoCloudNotepad> notepads = response.getData().getNotepads();
-        for (MomoCloudNotepad notepad : notepads) {
+        MomoResponse<NotepadsDTO> response = momoOpenApi.getAllNotepads();
+        List<Notepad> notepads = response.getData().getNotepads();
+        for (Notepad notepad : notepads) {
             deleteNotepad(notepad.getId());
         }
     }
 
-    public MomoCloudNotepad updateNotepad(MomoCloudNotepad momoCloudNotepad) {
-        checkRequired(momoCloudNotepad);
-        String id = momoCloudNotepad.getId();
+    public Notepad updateNotepad(Notepad notepad) {
+        checkRequired(notepad);
+        String id = notepad.getId();
         Assert.notNull(id, "id不能为空");
-        MomoResponse<OneNotepad> result = momoOpenApi.updateNotepad(id, new OneNotepad(momoCloudNotepad));
+        MomoResponse<NotepadDTO> result = momoOpenApi.updateNotepad(id, new NotepadDTO(notepad));
         checkResult(result);
         return result.getData().getNotepad();
     }
@@ -84,20 +84,20 @@ public class MomoCloudService {
     /**
      * 创建一个notepad
      *
-     * @param momoCloudNotepad 要创建的notepad
+     * @param notepad 要创建的notepad
      * @return 新创建的notepad的id，如果为空字符串，则表示创建失败
      */
-    public MomoCloudNotepad createNotepad(MomoCloudNotepad momoCloudNotepad) {
-        checkRequired(momoCloudNotepad);
+    public Notepad createNotepad(Notepad notepad) {
+        checkRequired(notepad);
 
-        MomoResponse<OneNotepad> result = momoOpenApi.createNotepad(new OneNotepad(momoCloudNotepad));
+        MomoResponse<NotepadDTO> result = momoOpenApi.createNotepad(new NotepadDTO(notepad));
         checkResult(result);
         return result.getData().getNotepad();
     }
 
-    public MomoCloudNotepad createNotepad(String title, String brief, String content) {
-        MomoCloudNotepad momoCloudNotepad = MomoCloudNotepad.builder().title(title).brief(brief).content(content).build();
-        return createNotepad(momoCloudNotepad);
+    public Notepad createNotepad(String title, String brief, String content) {
+        Notepad notepad = Notepad.builder().title(title).brief(brief).content(content).build();
+        return createNotepad(notepad);
     }
 
     /**
@@ -106,8 +106,8 @@ public class MomoCloudService {
      * @return 返回null表示云端notepad不存在
      */
 
-    public MomoCloudNotepad getNotepad(String id) {
-        MomoResponse<OneNotepad> result;
+    public Notepad getNotepad(String id) {
+        MomoResponse<NotepadDTO> result;
         try {
             result = momoOpenApi.getNotepad(id);
         } catch (WebClientResponseException e) {

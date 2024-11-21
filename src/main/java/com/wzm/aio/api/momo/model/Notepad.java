@@ -1,7 +1,8 @@
-package com.wzm.aio.pojo.model;
+package com.wzm.aio.api.momo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wzm.aio.config.AutoMapperConfiguration;
+import com.wzm.aio.pojo.model.MomoLocalNotepad;
 import com.wzm.aio.util.BeanUtils;
 import io.github.linpeilie.annotations.AutoMapper;
 import io.github.linpeilie.annotations.AutoMapping;
@@ -13,7 +14,7 @@ import java.util.List;
 @Data
 @AutoMapper(target = MomoLocalNotepad.class,
         uses = AutoMapperConfiguration.StringListConverter.class)
-public class MomoCloudNotepad {
+public class Notepad {
     public enum Type {
         FAVORITE, NOTEPAD
     }
@@ -44,40 +45,40 @@ public class MomoCloudNotepad {
     }
 
     public static class Builder {
-        private final MomoCloudNotepad momoCloudNotepad = new MomoCloudNotepad();
+        private final Notepad notepad = new Notepad();
 
         public Builder id(String id) {
-            this.momoCloudNotepad.setId(id);
+            this.notepad.setId(id);
             return this;
         }
 
         public Builder status(Stats stats) {
-            this.momoCloudNotepad.setStatus(stats);
+            this.notepad.setStatus(stats);
             return this;
         }
 
         public Builder title(String title) {
-            this.momoCloudNotepad.setTitle(title);
+            this.notepad.setTitle(title);
             return this;
         }
 
         public Builder brief(String brief) {
-            this.momoCloudNotepad.setBrief(brief);
+            this.notepad.setBrief(brief);
             return this;
         }
 
         public Builder content(String content) {
-            this.momoCloudNotepad.setContent(content);
+            this.notepad.setContent(content);
             return this;
         }
 
         public Builder tags(String... tags) {
-            this.momoCloudNotepad.setTags(List.of(tags));
+            this.notepad.setTags(List.of(tags));
             return this;
         }
 
-        public MomoCloudNotepad build() {
-            return this.momoCloudNotepad;
+        public Notepad build() {
+            return this.notepad;
         }
 
     }
