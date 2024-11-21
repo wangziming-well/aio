@@ -31,7 +31,7 @@ docusaurus:
 open-api:
   time-out: 30  # s
   max-memory-size: 2  # MB
-  enable-log : true
+  enable-log : false
 
   momo:
     base-url: https://open.maimemo.com/open/api/v1/notepads
@@ -49,8 +49,13 @@ open-api:
     model: gpt-3.5-turbo
     temperature: 0.4
     max-tokens: 20000
-
-
+  jav:
+    proxy-host: localhost
+    proxy-port: 7890
+    base-url: https://javdb.com
+    headers:
+      "User-Agent": Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36
+      "Cookie": list_mode=h; theme=auto; _ym_uid=1728221276330401034; _ym_d=1728221276; over18=1; comment_warning=1; locale=en; _ym_isad=2; _rucaptcha_session_id=c95008587d5fa791bf9942fe43b2ff73; cf_clearance=8P9Ypwe97fhGPzEQ9a1E8c2ts.iDHa0vz6ewkUSZfCc-1728648162-1.2.1.1-prh0MJXiNx4.DplRhzNOc.yGBauUDb_BRAEE751TXqraNQUk7hEsMlvtoEqyi3YUGraGzhShTp5Ocla.lRnd5rnd4qfwuff8dQKUtp4WaBY0iUNKv0BX.fuLpz_2wumdlil_R2.pOFhR.ffO5LF2bSh4y1JpCw6XTKKZbKWdUBMTBQMi2dojbhvMAWb_pw.NO1pNgZpRTmRJEy4F1EwXnJnQ1ywtSKBm2soN_Qo9hVvdnhrqRxvH06tRl81o4a7NPjOLiJ1gwyTThKQyzG.UCGOEVkvQqxpN26GOiHhJ6PEfjKOzOpejaooPXj3ZH_RgzqxqgE1iILcAHM41L3Fy6.z6v5uM35MwM4Vlk0Q50h7d47oGtbo51r0IkA3QJ_jV; remember_me_token=eyJfcmFpbHMiOnsibWVzc2FnZSI6IklqWnRXRE5PU0d0MFpYazBjV2xaUTBOcVdVNXhJZz09IiwiZXhwIjoiMjAyNC0xMC0xOFQxMjowMjo1Ny4wMDBaIiwicHVyIjoiY29va2llLnJlbWVtYmVyX21lX3Rva2VuIn19--15eced2272b5e0955556bf3fe165ca261ebc0d30; _jdb_session=a75YuvPPQgI4k8Zq0GpHrnAVTtekr6etyXo4mHTEjj5geVuo2c15vWBZpsidd3O8eKZoqmHrxYNEeyhynE5UkfjxD1FVAMcbYCUxTehLu1wVu1BGkNczThiSqThwgpIgD4xISAMz8wCZ%2FEz16IjguamBhRs0IFVITGOR4D4candt7m9E%2BUum8SWP%2FzHIrhjNJQ6kmAZyc0v13vQMwzGELqd%2F8EkUfB9h5NNOE6FqKD96zCLmLJJG%2BF2DRPBpUCV5Q8me%2BTIAJbvccVLv9ZXJdEiuRt0byJuDmRB%2FSxnUG%2F%2Br1j%2FrFj3wcDHZfJ04z7eSrzO05t8t5iNTf%2FhyL4oWexeeEkJKNJqOVan7Cv8FjRdTC608gFwnJ%2FkPhGfXMr6eqzQ%3D--di14TTI9jFVExAgo--SDzbbUQ16zyfMcjXLZ2Hgg%3D%3D
   local-base-url: http://localhost:8080
 
 logging:

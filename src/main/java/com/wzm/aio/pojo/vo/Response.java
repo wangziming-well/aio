@@ -31,8 +31,4 @@ public class Response<T> {
         result.setSuccess(false);
         return result;
     }
-
-
-
-
 }

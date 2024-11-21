@@ -1,5 +1,6 @@
 package com.wzm.aio.api;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.wzm.aio.util.JacksonUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,7 +37,11 @@ public class WebClientLogFilter {
                 return response.bodyToMono(String.class)
                         .flatMap(body -> {
                             if (response.statusCode().is2xxSuccessful())
-                                logMap.put(BODY, JacksonUtils.parseToMap(body));
+                                try{
+                                    logMap.put(BODY, JacksonUtils.parseToMap(body));
+                                } catch (Exception e){
+                                    logMap.put(BODY, body);
+                                }
                             else
                                 logMap.put(BODY, body);
                             logger.debug(RESPONSE_LOG_PREFIX + JacksonUtils.toJsonString(logMap));

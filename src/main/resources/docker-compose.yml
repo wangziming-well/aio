@@ -1,0 +1,160 @@
+version: '3.7'
+
+volumes:
+  media:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.2.101,rw"
+      device: ":/mnt/main-pool/media"
+  downloads:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.2.101,rw"
+      device: ":/mnt/download-pool/downloads"
+
+services:
+  nas-tools: #默认账户密码: admin /password
+    container_name: nas-tools
+    hostname: nas-tools
+    image: diluka/nas-tools:2.9.1
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nas-tools/config:/config
+      - media:/media-library
+      - downloads:/downloads
+    environment:
+      NASTOOL_AUTO_UPDATE: "false"
+      PUID: 0
+      PGID: 0
+
+  # tracker列表地址: https://github.com/XIU2/TrackersListCollection?tab=readme-ov-file
+  qbittorrent:  # 通过docker logs qbittorrent 查看默认账户密码
+    container_name: qbittorrent
+    image: linuxserver/qbittorrent:latest
+    restart: always
+    environment:
+      WEBUI_PORT: 8989
+      TORRENTING_PORT: 6881
+      PUID: 0
+      PGID: 0
+      TZ: Asia/Shanghai
+    ports:
+      - "6881:6881"
+      - "8989:8989"
+      - "6881:6881/udp"
+    volumes:
+      - ./qbittorrent/config:/config
+      - downloads:/downloads
+      - media:/media-library
+
+  emby:
+    image: emby/embyserver:latest
+    container_name: emby-server
+    restart: always
+    environment:
+      UID: 0
+      GID: 0
+      GIDLIST: 100,101
+    volumes:
+      - ./emby/config:/config
+      - ./emby/metadata:/metadata
+      - media:/media-library
+      - ./emby/system/dashboard-ui:/system/dashboard-ui
+
+    ports:
+      - "8096:8096"
+  chinesesubfinder:
+    container_name: chinesesubfinder
+    hostname: chinesesubfinder
+    image: allanpk716/chinesesubfinder:latest
+    restart: always
+    privileged: true
+    volumes:
+      - ./chinesesubfinder/config:/config
+      - ./chinesesubfinder/browser:/root/.cache/rod/browser
+      - media:/media
+    environment:
+      PUID: 0
+      PGID: 0
+      PERMS: "true"
+      TZ: Asia/Shanghai
+      UMASK: 022
+    ports:
+      - "19035:19035"
+      - "19037:19037"
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+  jackett:
+    container_name: jackett
+    image: linuxserver/jackett:latest
+    restart: always
+    environment:
+      PUID: 0
+      PGID: 0
+      TZ: Asia/shanghai
+      AUTO_UPDATE: "true"
+    ports:
+      - "9117:9117"
+    volumes:
+      - ./jackett/config:/config
+      - ./jackett/downloads:/downloads
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    ports:
+      - "9000:9000"    # Portainer Web UI 端口
+      - "8000:8000"    # 可选：用于 Portainer Agent 的 TCP 端口
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # 允许 Portainer 访问 Docker 引擎
+      - ./portainer/data:/data  # 存储 Portainer 数据
+  javsp:
+    image: kxhubs/javsp:0.3  # 镜像名称
+    container_name: javsp  # 容器名称
+    restart: always  # 自动重启策略
+    environment:
+      CRON_TIME: "0 * * * *"  # "*/5 * * * *"  # 环境变量，定时任务时间
+      PUID: 0
+      PGID: 0
+    volumes:
+      - ./javsp/core/config.ini:/app/core/config.ini  # 必须的配置文件映射
+      - downloads:/downloads
+      - media:/media
+  xunlei:
+    image: cnk3x/xunlei
+    container_name: xunlei
+    privileged: true
+    restart: always  # 自动重启策略
+    ports:
+      - "2345:2345"
+    environment:
+      PUID: 0
+      PGID: 0
+    volumes:
+      - ./xunlei/data:/xunlei/data
+      - downloads:/xunlei/downloads
+  AutoBangumi:
+    image: "ghcr.io/estrellaxd/auto_bangumi:latest"
+    container_name: AutoBangumi
+    volumes:
+      - ./auto-bangumi/config:/app/config
+      - downloads:/downloads
+      - media:/media
+    ports:
+      - "7892:7892"
+    network_mode: bridge
+    restart: always
+    dns:
+      - 223.5.5.5
+    environment:
+      - TZ=Asia/Shanghai
+      - PGID=0
+      - PUID=0
+      - UMASK=022

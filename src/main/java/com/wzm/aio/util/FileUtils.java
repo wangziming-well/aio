@@ -30,6 +30,7 @@ public class FileUtils {
     }
 
 
+
     public static void copy(File source, String targetDir) {
         String name = source.getName();
         File target = new File(targetDir, name);
@@ -147,6 +148,14 @@ public class FileUtils {
             }
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void move(File source, File target) {
+        try {
+            Files.move(source.toPath(), target.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException("文件移动失败", e);
         }
     }
 

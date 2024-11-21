@@ -15,6 +15,8 @@ public class OpenApiProperties {
 
     private Openai openai;
 
+    private Jav jav;
+
     private String localBaseUrl;
 
     private int timeOut;
@@ -53,7 +55,14 @@ public class OpenApiProperties {
         }
     }
 
-
+    @Data
+    public static class Jav{
+        private String baseUrl;
+        private MultiValueMap<String,String> headers;
+        private String proxyHost;
+        private int proxyPort;
+        private String cookies;
+    }
 
 
 }

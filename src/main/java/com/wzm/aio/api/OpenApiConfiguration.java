@@ -1,6 +1,7 @@
 package com.wzm.aio.api;
 
 import com.wzm.aio.api.frdic.FrDicOpenApi;
+import com.wzm.aio.api.javdb.JavDBRequester;
 import com.wzm.aio.api.local.LocalOpenApi;
 import com.wzm.aio.api.momo.MomoOpenApi;
 import com.wzm.aio.properties.OpenApiProperties;
@@ -125,5 +126,17 @@ public class OpenApiConfiguration {
                         .host(proxyHost).port(proxyPort));
         webClientBuilder.clientConnector(new ReactorClientHttpConnector(httpClient));
     }
+
+
+    @Bean
+    public JavDBRequester javDbRequester(WebClient.Builder webClientBuilder) {
+        OpenApiProperties.Jav jav = properties.getJav();
+        String proxyHost = jav.getProxyHost();
+        int proxyPort = jav.getProxyPort();
+        setProxy(webClientBuilder, proxyHost, proxyPort);
+        return createOpenApiClient(webClientBuilder,jav.getBaseUrl(),jav.getHeaders(), JavDBRequester.class);
+    }
+
+
 
 }
