@@ -13,6 +13,18 @@ volumes:
       type: "nfs"
       o: "addr=192.168.2.101,rw"
       device: ":/mnt/download-pool/downloads"
+networks:
+  bridge-network:
+    driver: bridge
+  download-network:
+    driver: macvlan
+    driver_opts:
+      parent: ens18
+    ipam:
+      config:
+        - subnet: 192.168.2.102/24
+          gateway: 192.168.2.100
+
 
 services:
   nas-tools: #默认账户密码: admin /password
@@ -32,16 +44,25 @@ services:
       PGID: 0
 
   # tracker列表地址: https://github.com/XIU2/TrackersListCollection?tab=readme-ov-file
-  qbittorrent:  # 通过docker logs qbittorrent 查看默认账户密码
+  # 对于新建，需要执行下面命令改变默认网卡：
+  # ip route del default
+  # ip route add default via <gateway-ip-of-eth1> dev eth1
+  qbittorrent:  # 通过docker logs qbittorrent 查看默认账户密码 容器端口 6881 8989
     container_name: qbittorrent
     image: linuxserver/qbittorrent:latest
     restart: always
+    cap_add:
+      - NET_ADMIN
     environment:
       WEBUI_PORT: 8989
       TORRENTING_PORT: 6881
       PUID: 0
       PGID: 0
       TZ: Asia/Shanghai
+    networks:
+      download-network:
+        ipv4_address: 192.168.2.204
+      default:
     ports:
       - "6881:6881"
       - "8989:8989"
@@ -158,3 +179,24 @@ services:
       - PGID=0
       - PUID=0
       - UMASK=022
+  # tmm中文问题解决，进入docker容器,执行下面命令：
+  # apt-get install locales
+  # dpkg-reconfigure locales
+  tinymediamanager:
+    image: tinymediamanager/tinymediamanager:latest
+    container_name: tinymediamanager
+    environment:
+      - USER_ID=0
+      - GROUP_ID=0
+      - ALLOW_DIRECT_VNC=false
+      - LC_ALL=zh_CN.UTF-8 # force UTF8
+      - LANG=zh_CN.UTF-8   # force UTF8
+      - PASSWORD=wang998321
+    volumes:
+      - ./tinymediamanager/data:/data
+      - downloads:/downloads
+      - media:/media
+    ports:
+      #- "5900:5900" # VNC port
+      - "4000:4000" # Webinterface
+    restart: always
