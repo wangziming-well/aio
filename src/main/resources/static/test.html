@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>幸运转盘游戏</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+  <style>
+      body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+          margin: 0;
+          background-color: #f0f0f0;
+      }
+  </style>
+</head>
+<body>
+<script>
+	// Phaser 3 示例：幸运转盘游戏
+	const config = {
+		type: Phaser.AUTO,
+		width: 800,
+		height: 600,
+		scene: {
+			preload: preload,
+			create: create,
+			spinWheel: spinWheel,
+		},
+	};
+
+	const game = new Phaser.Game(config);
+	let wheel;
+	let spinButton;
+
+	function preload() {
+		// 加载转盘图像和按钮图像
+		this.load.image('wheel', 'assets/wheel.png'); // 需要提供自己的转盘图片
+		this.load.image('button', 'assets/button.png'); // 需要提供自己的按钮图片
+	}
+
+	function create() {
+		// 创建转盘
+		wheel = this.add.sprite(400, 300, 'wheel');
+		wheel.setScale(0.7);
+
+		// 创建旋转按钮
+		spinButton = this.add.sprite(400, 500, 'button').setInteractive();
+
+		// 添加点击事件监听器
+		spinButton.on('pointerdown', () => {
+			spinWheel.call(this);
+		});
+	}
+
+	function spinWheel() {
+		// 禁用按钮防止多次点击
+		spinButton.disableInteractive();
+
+		// 随机选择旋转角度，确保至少转2圈
+		const rounds = Phaser.Math.Between(2, 4);
+		const degrees = Phaser.Math.Between(0, 360);
+		const totalAngle = 360 * rounds + degrees;
+
+		// 使用tween实现平滑旋转
+		this.tweens.add({
+			targets: wheel,
+			angle: totalAngle,
+			ease: 'Cubic.easeOut',
+			duration: 3000,
+			onComplete: () => {
+				// 恢复按钮的互动性
+				spinButton.setInteractive();
+				// 在这里可以添加获奖逻辑，例如显示获奖信息
+				const prizeIndex = Math.floor(degrees / (360 / 8)); // 假设有8个奖项
+				console.log(`恭喜你赢得了第 ${prizeIndex + 1} 个奖品！`);
+			},
+		});
+	}
+</script>
+</body>
+</html>
