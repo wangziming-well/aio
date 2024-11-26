@@ -74,11 +74,12 @@ services:
   qbittorrent-p:
     image: johngong/qbittorrent:latest
     container_name: qbittorrent-p
-    networks:
-      download-network:
-        ipv4_address: 192.168.2.205
+    ports:
+      - "8990:8990"
+      - "6882:6881"
+      - "6882:6881/udp"
     environment:
-      - QB_WEBUI_PORT=8989
+      - QB_WEBUI_PORT=8990
       - QB_EE_BIN=false
       - UID=0
       - GID=0
