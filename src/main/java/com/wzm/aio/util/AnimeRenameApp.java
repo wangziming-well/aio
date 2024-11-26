@@ -1,36 +1,39 @@
 package com.wzm.aio.util;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class AnimeRenameApp {
 
 
     public static void main(String[] args) {
        // 指定文件夹路径
-        String folderPath = "P:\\Xunlei\\SW笔记";
-        String animeName = "死亡笔记";
+        String folderPath = "O:\\Anime\\动漫\\擅长捉弄的高木同学\\";
+        String animeName = "擅长捉弄的高木同学";
         int [] seasonEpisodeCount = null;
-        int episodeType =2;
+        int episodeType =1;
         int offset = 0;
-        boolean isTest = true;
-        fileRename(folderPath,animeName,episodeType,seasonEpisodeCount,offset,isTest);
+        int season = 3;
+        boolean isTest = false;
+        task(folderPath,animeName,episodeType,season,seasonEpisodeCount,offset,isTest);
     }
 
-    public static void fileRename(String folderPath, String animeName, int episodeType, int [] seasonEpisodeCount, int offset, boolean test){
+    public static void task(String folderPath, String animeName, int episodeType,int season, int [] seasonEpisodeCount, int offset, boolean test){
         File folder = new File(folderPath);
-        FileUtils.traverseFile(folder, file -> fileRename(file,animeName,episodeType,seasonEpisodeCount, offset,test) );
+        FileUtils.traverseFile(folder, file -> fileRename(file,animeName,episodeType, season,seasonEpisodeCount, offset,test) );
     }
 
 
 
 
-    public static void fileRename(File file, String animeName, int episodeType, int [] seasonEpisodeCount, int offset, boolean test){
+    public static void fileRename(File file, String animeName, int episodeType,int season, int [] seasonEpisodeCount, int offset, boolean test){
         String oldName = file.getName();
-        String extension = oldName.split("\\.")[1];
-        String seasonAndEpisodeCode = getSeasonAndEpisodeCode(oldName,episodeType,seasonEpisodeCount, offset);
-        String newFilename = String.format("%s[%s].%s",animeName,seasonAndEpisodeCode,extension);
+        String extension = Arrays.stream(oldName.split("\\.")).skip(1).collect(Collectors.joining("."));
+        String seasonAndEpisodeCode = getSeasonAndEpisodeCode(oldName,episodeType, season,seasonEpisodeCount, offset);
+        String newFilename = String.format("%s %s.%s",animeName,seasonAndEpisodeCode,extension);
         if (test)
             System.out.println("预览："+oldName + "->" + newFilename);
         else
@@ -38,30 +41,32 @@ public class AnimeRenameApp {
     }
 
     public static String fromSxxExx(String filename){
-        Pattern compile = Pattern.compile("\\[S\\d*E\\d*S\\d*E\\d*]");
+        Pattern compile = Pattern.compile("\\[(S\\d*E\\d*S\\d*E\\d*)]");
         Matcher matcher = compile.matcher(filename);
 
         if (matcher.find()){
-            return matcher.group();
+            return matcher.group(1);
         }
 
-        compile = Pattern.compile("\\[S\\d*E\\d*]");
+        compile = Pattern.compile("\\[(S\\d*E\\d*)]");
         matcher = compile.matcher(filename);
 
         if (matcher.find()){
-            return matcher.group();
+            return matcher.group(1);
         }
         return "";
     }
 
-    public static String fromXxxToOneSeason(String filename,int offset){
-        return fromXxxToMultiSeason(filename,new int[] {Integer.MAX_VALUE}, offset);
+    public static String fromXxxToOneSeason(String filename,int season,int offset){
+        int[] ints = new int[season];
+        ints[season-1] = Integer.MAX_VALUE;
+        return fromXxxToMultiSeason(filename,ints, offset);
     }
 
-    public static String getSeasonAndEpisodeCode(String filename,int episodeType,int [] seasonEpisodeCount,int offset){
+    public static String getSeasonAndEpisodeCode(String filename,int episodeType,int season,int [] seasonEpisodeCount,int offset){
         return switch (episodeType) {
             case 1 -> fromSxxExx(filename);
-            case 2 -> fromXxxToOneSeason(filename, offset);
+            case 2 -> fromXxxToOneSeason(filename, season, offset);
             case 3 -> fromXxxToMultiSeason(filename, seasonEpisodeCount, offset);
             default -> throw new RuntimeException("不支持的episodeType");
         };

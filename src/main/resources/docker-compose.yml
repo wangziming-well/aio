@@ -99,6 +99,7 @@ services:
       GIDLIST: 100,101
     volumes:
       - ./emby/config:/config
+      - ./emby/fonts:/usr/share/fonts
       - ./emby/metadata:/metadata
       - media:/media-library
       - ./emby/system/dashboard-ui:/system/dashboard-ui
