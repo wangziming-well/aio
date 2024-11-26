@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class FileUtils {
 
@@ -156,6 +157,34 @@ public class FileUtils {
             Files.move(source.toPath(), target.toPath());
         } catch (IOException e) {
             throw new RuntimeException("文件移动失败", e);
+        }
+    }
+
+    /**
+     * 遍历指定文件夹中的文件，并对文件通过callback处理
+     * @param folder 要遍历的文件夹
+     * @param callback 对文件的处理回调
+     */
+
+    public static void traverseFile(File folder, Consumer<File> callback){
+        if (!folder.exists() || !folder.isDirectory())
+            throw  new RuntimeException("指定的路径不是一个有效的文件夹！");
+        traverseFileInternal(folder,callback);
+    }
+
+    private static void traverseFileInternal(File folder, Consumer<File> callback){
+        File[] files = folder.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
+            if (file.isDirectory()) {
+                // 递归处理子文件夹
+                traverseFileInternal(file,callback);
+            } else {
+                // 处理文件
+                callback.accept(file);
+            }
         }
     }
 

@@ -71,6 +71,22 @@ services:
       - ./qbittorrent/config:/config
       - downloads:/downloads
       - media:/media-library
+  qbittorrent-p:
+    image: johngong/qbittorrent:latest
+    container_name: qbittorrent-p
+    networks:
+      download-network:
+        ipv4_address: 192.168.2.205
+    environment:
+      - QB_WEBUI_PORT=8989
+      - QB_EE_BIN=false
+      - UID=0
+      - GID=0
+      - UMASK=022
+    volumes:
+      - ./qbittorrent-p/config:/config
+      - downloads:/Downloads
+    restart: always
 
   emby:
     image: emby/embyserver:latest
