@@ -1,22 +1,26 @@
-package com.wzm.aio.util;
+package com.wzm.aio.media;
+
+import com.wzm.aio.util.FileUtils;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class AnimeRenameApp {
 
 
     public static void main(String[] args) {
-       // 指定文件夹路径
-        String folderPath = "O:\\Anime\\动漫\\擅长捉弄的高木同学\\";
-        String animeName = "擅长捉弄的高木同学";
+        app();
+    }
+
+    public static void app(){
+        // 指定文件夹路径
+        String folderPath = "O:\\Anime\\动漫\\上低音号\\Season 2";
+        String animeName = "上低音号";
         int [] seasonEpisodeCount = null;
         int episodeType =1;
         int offset = 0;
-        int season = 3;
+        int season = 2;
         boolean isTest = false;
         task(folderPath,animeName,episodeType,season,seasonEpisodeCount,offset,isTest);
     }
@@ -31,7 +35,7 @@ public class AnimeRenameApp {
 
     public static void fileRename(File file, String animeName, int episodeType,int season, int [] seasonEpisodeCount, int offset, boolean test){
         String oldName = file.getName();
-        String extension = Arrays.stream(oldName.split("\\.")).skip(1).collect(Collectors.joining("."));
+        String extension = FileUtils.fileExtension(file);
         String seasonAndEpisodeCode = getSeasonAndEpisodeCode(oldName,episodeType, season,seasonEpisodeCount, offset);
         String newFilename = String.format("%s %s.%s",animeName,seasonAndEpisodeCode,extension);
         if (test)
@@ -40,20 +44,42 @@ public class AnimeRenameApp {
             renameFile(file,newFilename);
     }
 
-    public static String fromSxxExx(String filename){
-        Pattern compile = Pattern.compile("\\[(S\\d*E\\d*S\\d*E\\d*)]");
+    public static String fromSxxExx(String filename,int season,int offset){
+        Pattern compile = Pattern.compile("S(\\d*)E(\\d*)S(\\d*)E(\\d*)");
         Matcher matcher = compile.matcher(filename);
 
         if (matcher.find()){
-            return matcher.group(1);
+            int E1 =Integer.parseInt(matcher.group(2)) ;
+            int E2 =Integer.parseInt(matcher.group(4)) ;
+
+            return String.format("S%02dE%02dS%02dE%02d",season,E1 + offset,season,E2 + offset);
         }
 
-        compile = Pattern.compile("\\[(S\\d*E\\d*)]");
+        compile = Pattern.compile("S\\d*E(\\d*)");
         matcher = compile.matcher(filename);
 
         if (matcher.find()){
-            return matcher.group(1);
+            int E1 =Integer.parseInt(matcher.group(1)) ;
+            return String.format("S%02dE%02d",season,E1 + offset);
+
         }
+
+        compile = Pattern.compile("\\.(\\d*)\\.");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            int E1 =Integer.parseInt(matcher.group(1)) ;
+            return String.format("S%02dE%02d",season,E1 + offset);
+        }
+
+        compile = Pattern.compile("\\[(\\d*)]");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            int E1 =Integer.parseInt(matcher.group(1)) ;
+            return String.format("S%02dE%02d",season,E1 + offset);
+        }
+
         return "";
     }
 
@@ -65,7 +91,7 @@ public class AnimeRenameApp {
 
     public static String getSeasonAndEpisodeCode(String filename,int episodeType,int season,int [] seasonEpisodeCount,int offset){
         return switch (episodeType) {
-            case 1 -> fromSxxExx(filename);
+            case 1 -> fromSxxExx(filename, season, offset);
             case 2 -> fromXxxToOneSeason(filename, season, offset);
             case 3 -> fromXxxToMultiSeason(filename, seasonEpisodeCount, offset);
             default -> throw new RuntimeException("不支持的episodeType");
@@ -90,6 +116,23 @@ public class AnimeRenameApp {
             String number = matcher.group(1);
             return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
         }
+        compile = Pattern.compile("第(\\d*)話");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
+        compile = Pattern.compile("第(\\d*)集");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
+
         return "";
     }
 
