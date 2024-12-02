@@ -188,4 +188,72 @@ public class FileUtils {
         }
     }
 
+    public static String fileExtension(File file){
+        if (!file.isFile())
+            throw new RuntimeException("不是文件");
+        // 获取文件名
+        String fileName = file.getName();
+        String fileExtension = "";
+
+        // 查找最后一个点
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            fileExtension = fileName.substring(dotIndex + 1);
+        }
+
+        return fileExtension;
+    }
+
+    public static String baseName(File file){
+        if (!file.isFile())
+            throw new RuntimeException("不是文件");
+        // 获取文件名
+        String fileName = file.getName();
+        String fileBaseName = "";
+        // 查找最后一个点
+        int dotIndex = fileName.lastIndexOf('.');
+        if (dotIndex > 0) {
+            fileBaseName = fileName.substring(0,dotIndex);
+        }
+        return fileBaseName;
+    }
+
+    /**
+     * 例如： 123.default.app.ass 的中间名是 .default.app
+     * @param file 文件
+     * @return 返回文件的中间名
+     */
+
+    public static String middleName(File file){
+        if (!file.isFile())
+            throw new RuntimeException("不是文件");
+        // 获取文件名
+        String fileName = file.getName();
+        String middleName = "";
+        int lastIndex = fileName.lastIndexOf('.');
+        int firstIndex = fileName.indexOf('.');
+        if (firstIndex > 0){
+            middleName = fileName.substring(firstIndex,lastIndex);
+        }
+        return middleName;
+    }
+
+    public static void main(String[] args) {
+        File file = new File("O:\\Anime\\动漫\\电波女与青春男 (2011)\\Season 1\\[VCB-Studio] Denpa Onna to Seishun Otoko [02][Ma10p_1080p][x265_flac_aac].Commentary.ass");
+        System.out.println(middleName(file));
+    }
+
+
+    public static void renameFile(File file,String newFilename) {
+        // 获取文件所在目录
+        String parentPath = file.getParent();
+        File renamedFile = new File(parentPath, newFilename);
+        // 重命名文件
+        if (file.renameTo(renamedFile)) {
+            System.out.println("文件已重命名：" + file.getAbsolutePath() + " -> " + renamedFile.getAbsolutePath());
+        } else {
+            System.err.println("文件重命名失败：" + file.getAbsolutePath());
+        }
+    }
+
 }

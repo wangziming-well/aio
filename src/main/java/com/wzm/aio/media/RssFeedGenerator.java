@@ -1,4 +1,4 @@
-package com.wzm.aio;
+package com.wzm.aio.media;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.rometools.rome.feed.synd.*;

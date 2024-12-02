@@ -13,18 +13,6 @@ volumes:
       type: "nfs"
       o: "addr=192.168.2.101,rw"
       device: ":/mnt/download-pool/downloads"
-networks:
-  bridge-network:
-    driver: bridge
-  download-network:
-    driver: macvlan
-    driver_opts:
-      parent: ens18
-    ipam:
-      config:
-        - subnet: 192.168.2.102/24
-          gateway: 192.168.2.100
-
 
 services:
   nas-tools: #默认账户密码: admin /password
@@ -51,18 +39,12 @@ services:
     container_name: qbittorrent
     image: linuxserver/qbittorrent:latest
     restart: always
-    cap_add:
-      - NET_ADMIN
     environment:
       WEBUI_PORT: 8989
       TORRENTING_PORT: 6881
       PUID: 0
       PGID: 0
       TZ: Asia/Shanghai
-    networks:
-      download-network:
-        ipv4_address: 192.168.2.204
-      default:
     ports:
       - "6881:6881"
       - "8989:8989"
@@ -88,6 +70,18 @@ services:
       - ./qbittorrent-p/config:/config
       - downloads:/Downloads
     restart: always
+  peerbanhelper:
+    image: ghostchu/peerbanhelper:v7.1.5
+    restart: always
+    container_name: "peerbanhelper"
+    volumes:
+      - ./peerbanhelper/data:/app/data
+    ports:
+      - "9898:9898"
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=UTC
 
   emby:
     image: emby/embyserver:latest
