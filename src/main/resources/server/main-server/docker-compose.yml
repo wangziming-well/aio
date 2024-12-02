@@ -1,0 +1,58 @@
+version: '3.7'
+# truenas设置nfs共享时，将mapall 设置为 root
+volumes:
+  nextcloud:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.2.101,rw"
+      device: ":/mnt/main-pool/dockers/nextcloud"
+  mariadb:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.2.101,rw"
+      device: ":/mnt/main-pool/dockers/mariadb"
+
+services:
+  nextcloud:
+    image: nextcloud:latest
+    restart: unless-stopped
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_PASSWORD=wang998321 # 按需修改
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_HOST=192.168.2.104
+      - TZ=Asia/Shanghai
+    ports:
+      - "88:80"
+
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    user: "0:0"
+    volumes:
+      - ./public/local/redis/data:/data
+      - ./public/local/redis/conf:/usr/local/etc/redis
+    environment:
+      - TZ=Asia/Shanghai
+
+  mariadb:
+    image: mariadb:latest
+    restart: unless-stopped
+    # 下面的command与官网略有不同。它将有助于避免MYSQL数据库的4047报错。
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW --innodb-file-per-table=1 --skip-innodb-read-only-compressed
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=wang998321 # 按需修改
+      - MYSQL_PASSWORD=wang998321  # 按需修改
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - TZ=Asia/Shanghai
