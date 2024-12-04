@@ -12,16 +12,15 @@ import java.util.regex.Pattern;
 public class SubRename {
 
     public static void main(String[] args) {
-        String folderStr = "O:\\Anime\\动漫\\魔法少女☆伊莉雅 (2013)\\Season 4";
+        String folderStr = "O:\\Anime\\动漫\\绝望先生\\Season 3";
         File folder = new File(folderStr);
         boolean test =false;
-        boolean useMidName = true;
+        boolean useMidName = false;
         renameSub(folder,test,useMidName);
     }
 
     public static void renameSub(File folder,boolean test,boolean useMidName){
         Map<Integer, String> animeNames = animeNames(folder);
-
         FileUtils.traverseFile(folder , file -> {
             if (isSub(file)){
                 String name = file.getName();
@@ -59,6 +58,13 @@ public class SubRename {
             String numberStr = matcher.group(1);
             return Integer.parseInt(numberStr);
         }
+        compile = Pattern.compile("第(\\d*)話");
+        matcher = compile.matcher(name);
+        if (matcher.find()){
+            String numberStr = matcher.group(1);
+            return Integer.parseInt(numberStr);
+        }
+
         compile = Pattern.compile("\\s(\\d*)\\s");
         matcher = compile.matcher(name);
         if (matcher.find()){
@@ -120,7 +126,8 @@ public class SubRename {
         String fileExtension = FileUtils.fileExtension(file);
         if (fileExtension.equals("mkv"))
             return true;
-
+        if (fileExtension.equals("mp4"))
+            return true;
         return false;
     }
 

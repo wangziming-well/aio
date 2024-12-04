@@ -15,10 +15,10 @@ public class AnimeRenameApp {
 
     public static void app(){
         // 指定文件夹路径
-        String folderPath = "O:\\Anime\\动漫\\上低音号\\Season 2";
-        String animeName = "上低音号";
+        String folderPath = "O:\\Anime\\动漫\\绝望先生\\[celery] Zoku Sayonara Zetsubou Sensei (S02)";
+        String animeName = "绝望先生";
         int [] seasonEpisodeCount = null;
-        int episodeType =1;
+        int episodeType =2;
         int offset = 0;
         int season = 2;
         boolean isTest = false;
@@ -80,6 +80,14 @@ public class AnimeRenameApp {
             return String.format("S%02dE%02d",season,E1 + offset);
         }
 
+        compile = Pattern.compile("-(\\d*)");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            int E1 =Integer.parseInt(matcher.group(1)) ;
+            return String.format("S%02dE%02d",season,E1 + offset);
+        }
+
         return "";
     }
 
@@ -132,8 +140,24 @@ public class AnimeRenameApp {
             return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
         }
 
+        compile = Pattern.compile("E(\\d*)");
+        matcher = compile.matcher(filename);
 
-        return "";
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
+        compile = Pattern.compile("-(\\d*)");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
+
+        throw new RuntimeException("匹配集数失败:" + filename);
     }
 
 
