@@ -13,12 +13,6 @@ volumes:
       type: "nfs"
       o: "addr=192.168.2.101,rw"
       device: ":/mnt/main-pool/dockers/mariadb"
-  gitlab:
-    driver: local
-    driver_opts:
-      type: "nfs"
-      o: "addr=192.168.2.101,rw"
-      device: ":/mnt/main-pool/dockers/gitlab"
 
 services:
   nextcloud:
@@ -65,21 +59,3 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - TZ=Asia/Shanghai
-
-  gitlab:
-    image: gitlab/gitlab-ce:latest
-    container_name: gitlab
-    restart: always
-    hostname: 'gitlab.wangziming.com'
-    environment:
-      GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://localhost:8929'
-        gitlab_rails['gitlab_shell_ssh_port'] = 2424
-    ports:
-      - '8929:8929'
-      - '2424:22'
-    volumes:
-      - ./gitlab/config:/etc/gitlab
-      - ./gitlab/logs:/var/log/gitlab
-      - gitlab:/var/opt/gitlab
-    shm_size: '256m'
