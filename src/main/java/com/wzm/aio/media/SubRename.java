@@ -12,10 +12,10 @@ import java.util.regex.Pattern;
 public class SubRename {
 
     public static void main(String[] args) {
-        String folderStr = "O:\\Anime\\动漫\\绝望先生\\Season 3";
+        String folderStr = "O:\\Anime\\动漫\\妖精森林的小不点 (2018)\\Season 1";
         File folder = new File(folderStr);
         boolean test =false;
-        boolean useMidName = false;
+        boolean useMidName = true;
         renameSub(folder,test,useMidName);
     }
 
