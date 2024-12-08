@@ -82,7 +82,7 @@ services:
       - PUID=0
       - PGID=0
       - TZ=UTC
-
+# zishuo/embyserver:latest
   emby:
     image: emby/embyserver:latest
     container_name: emby-server

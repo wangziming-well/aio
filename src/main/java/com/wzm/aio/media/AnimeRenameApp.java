@@ -11,16 +11,17 @@ public class AnimeRenameApp {
 
     public static void main(String[] args) {
         app();
+
     }
 
     public static void app(){
         // 指定文件夹路径
-        String folderPath = "O:\\Anime\\动漫\\绝望先生\\[celery] Zoku Sayonara Zetsubou Sensei (S02)";
-        String animeName = "绝望先生";
+        String folderPath = "O:\\Temp\\To LOVE-Ru\\[VCB-Studio] To LOVE-Ru Darkness OADs [Ma10p_1080p]";
+        String animeName = "To LOVE-Ru";
         int [] seasonEpisodeCount = null;
         int episodeType =2;
-        int offset = 0;
-        int season = 2;
+        int offset = 6;
+        int season = 0;
         boolean isTest = false;
         task(folderPath,animeName,episodeType,season,seasonEpisodeCount,offset,isTest);
     }
@@ -36,8 +37,9 @@ public class AnimeRenameApp {
     public static void fileRename(File file, String animeName, int episodeType,int season, int [] seasonEpisodeCount, int offset, boolean test){
         String oldName = file.getName();
         String extension = FileUtils.fileExtension(file);
+        String middleName = FileUtils.middleName(file);
         String seasonAndEpisodeCode = getSeasonAndEpisodeCode(oldName,episodeType, season,seasonEpisodeCount, offset);
-        String newFilename = String.format("%s %s.%s",animeName,seasonAndEpisodeCode,extension);
+        String newFilename = String.format("%s %s%s.%s",animeName,seasonAndEpisodeCode,middleName,extension);
         if (test)
             System.out.println("预览："+oldName + "->" + newFilename);
         else
@@ -92,8 +94,8 @@ public class AnimeRenameApp {
     }
 
     public static String fromXxxToOneSeason(String filename,int season,int offset){
-        int[] ints = new int[season];
-        ints[season-1] = Integer.MAX_VALUE;
+        int[] ints = new int[season+1];
+        ints[season] = Integer.MAX_VALUE;
         return fromXxxToMultiSeason(filename,ints, offset);
     }
 
@@ -132,6 +134,22 @@ public class AnimeRenameApp {
             return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
         }
 
+        compile = Pattern.compile("\\[OVA(\\d*)]");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
+        compile = Pattern.compile("\\[OAD(\\d*)]");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
         compile = Pattern.compile("第(\\d*)集");
         matcher = compile.matcher(filename);
 
@@ -141,6 +159,22 @@ public class AnimeRenameApp {
         }
 
         compile = Pattern.compile("E(\\d*)");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+
+        compile = Pattern.compile("\\s(\\d*)]");
+        matcher = compile.matcher(filename);
+
+        if (matcher.find()){
+            String number = matcher.group(1);
+            return calculateSeasonEpisode(Integer.parseInt(number)+ offset,seasonEpisodeCount);
+        }
+        //
+        compile = Pattern.compile("\\[SP(\\d*)]");
         matcher = compile.matcher(filename);
 
         if (matcher.find()){
@@ -170,7 +204,7 @@ public class AnimeRenameApp {
                 break;
         }
         int episode = count - (sum - seasonEpisodeCount[i]);
-        int session = i+1;
+        int session = i;
         return String.format("S%02dE%02d",session,episode);
     }
 

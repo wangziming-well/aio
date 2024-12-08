@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class SubRename {
 
     public static void main(String[] args) {
-        String folderStr = "O:\\Anime\\动漫\\妖精森林的小不点 (2018)\\Season 1";
+        String folderStr = "O:\\Anime\\动漫\\出包王女 (2008)\\Season 4";
         File folder = new File(folderStr);
         boolean test =false;
         boolean useMidName = true;
@@ -91,6 +91,21 @@ public class SubRename {
             String numberStr = matcher.group(1);
             return Integer.parseInt(numberStr);
         }
+
+        compile = Pattern.compile("\\[SP(\\d*)]");
+        matcher = compile.matcher(name);
+        if (matcher.find()){
+            String numberStr = matcher.group(1);
+            return Integer.parseInt(numberStr);
+        }
+
+        compile = Pattern.compile("SP\\s(\\d*)");
+        matcher = compile.matcher(name);
+        if (matcher.find()){
+            String numberStr = matcher.group(1);
+            return Integer.parseInt(numberStr);
+        }
+
         compile = Pattern.compile("\\d*");
         matcher = compile.matcher(name);
         if (matcher.find()){
@@ -118,6 +133,8 @@ public class SubRename {
     public static boolean isSub(File file){
         String fileExtension = FileUtils.fileExtension(file);
         if (fileExtension.equals("ass"))
+            return true;
+        if (fileExtension.equals("srt"))
             return true;
         return false;
     }
