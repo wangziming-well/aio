@@ -3,10 +3,13 @@
 sudo passwd root
 su root
 nano /etc/ssh/sshd_config
-# 解决内存buffer/cache占用过高问题
-nano /etc/sysctl.conf
 #将 PermitRootLogin 设置为 yes
 systemctl restart sshd
+
+
+
+# 解决内存buffer/cache占用过高问题
+nano /etc/sysctl.conf
 # 使用下面配置
 vm.dirty_ratio = 5
 vm.dirty_background_ratio =5

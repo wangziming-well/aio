@@ -59,3 +59,24 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - TZ=Asia/Shanghai
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+  # docker cp prometheus:/etc/prometheus /docker
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus:/etc/prometheus
+# 修改 /etc/prometheus/prometheus.yml
+# 在最后添加上：
+#     scrape_configs:
+#      - job_name: 'proxmox'
+#        metrics_path: /pve
+#        static_configs:
+#        - targets: ['192.168.2.99:9221']

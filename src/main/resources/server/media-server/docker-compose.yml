@@ -7,6 +7,12 @@ volumes:
       type: "nfs"
       o: "addr=192.168.2.101,rw"
       device: ":/mnt/main-pool/media"
+  jav:
+    driver: local
+    driver_opts:
+      type: "nfs"
+      o: "addr=192.168.2.101,rw"
+      device: ":/mnt/main-pool/jav"
   downloads:
     driver: local
     driver_opts:
@@ -82,7 +88,25 @@ services:
       - PUID=0
       - PGID=0
       - TZ=UTC
-# zishuo/embyserver:latest
+  # mkdir -p /docker/emby-kx/system
+  # docker cp emby-kx-server:/system/dashboard-ui /docker/emby-kx/system/dashboard-ui
+  emby-kx:
+    image: lovechen/embyserver:latest
+    container_name: emby-kx-server
+    restart: always
+    environment:
+      UID: 0
+      GID: 0
+      GIDLIST: 100,101
+    volumes:
+      - ./emby-kx/config:/config
+      - ./emby-kx/fonts:/usr/share/fonts
+      - media:/media
+      - ./emby-kx/system/dashboard-ui:/system/dashboard-ui
+    ports:
+      - "8096:8096"
+  # mkdir -p /docker/emby/system
+  # docker cp emby-server:/system/dashboard-ui /docker/emby/system/dashboard-ui
   emby:
     image: emby/embyserver:latest
     container_name: emby-server
@@ -93,13 +117,11 @@ services:
       GIDLIST: 100,101
     volumes:
       - ./emby/config:/config
-      - ./emby/fonts:/usr/share/fonts
-      - ./emby/metadata:/metadata
-      - media:/media-library
-      - ./emby/system/dashboard-ui:/system/dashboard-ui
-
+      - jav:/media
+      #- ./emby/system/dashboard-ui:/system/dashboard-ui
     ports:
-      - "8096:8096"
+      - "8097:8096"
+
   chinesesubfinder:
     container_name: chinesesubfinder
     hostname: chinesesubfinder
