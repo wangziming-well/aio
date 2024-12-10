@@ -94,6 +94,8 @@ services:
     image: lovechen/embyserver:latest
     container_name: emby-kx-server
     restart: always
+    ports:
+      - "8096:8096"
     environment:
       UID: 0
       GID: 0
@@ -103,8 +105,12 @@ services:
       - ./emby-kx/fonts:/usr/share/fonts
       - media:/media
       - ./emby-kx/system/dashboard-ui:/system/dashboard-ui
-    ports:
-      - "8096:8096"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
   # mkdir -p /docker/emby/system
   # docker cp emby-server:/system/dashboard-ui /docker/emby/system/dashboard-ui
   emby:
